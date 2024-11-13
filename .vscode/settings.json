@@ -1,0 +1,13 @@
+{
+    "java.configuration.updateBuildConfiguration": "interactive",
+    "java.compile.nullAnalysis.mode": "disabled",
+    "java.format.settings.url": ".vscode/java-formatter.xml",
+    "[java]": {
+        "editor.insertSpaces": false,
+        "editor.tabSize": 4
+    },
+    "files.autoSave": "off",
+    "editor.formatOnSave": true,
+    "sonarlint.pathToNodeExecutable": "/usr/bin/node",
+    "editor.wordWrap": "on"
+}
