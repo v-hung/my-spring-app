@@ -1,6 +1,7 @@
 package com.example.demo.repositories;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -17,5 +18,7 @@ public interface RefreshTokenRepository extends JpaRepository<RefreshToken, Stri
 	@Transactional
 	@Query("DELETE FROM RefreshToken rt WHERE rt.expiryTime < :currentTime")
 	void deleteExpiredTokens(LocalDateTime currentTime);
+
+	Optional<RefreshToken> findByToken(String token);
 
 }

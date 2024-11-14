@@ -39,12 +39,14 @@ public class DataInitializer implements CommandLineRunner {
 		Role userRole = roleRepository.findByName("admin")
 			.orElseGet(() -> roleRepository.save(new Role().setName("admin").setAdmin(true)));
 
-		if (!userRepository.findByUsername("admin@admin.com").isPresent()) {
+		final String DEFAULT_USERNAME = "admin@admin.com";
+
+		if (!userRepository.findByUsername(DEFAULT_USERNAME).isPresent()) {
 
 			User admin = new User()
-				.setUsername("admin@admin.com")
-				.setEmail("admin@admin.com")
-				.setPassword(passwordEncoder.encode("Admin123!"))
+				.setUsername(DEFAULT_USERNAME)
+				.setEmail(DEFAULT_USERNAME)
+				.setPassword(passwordEncoder.encode("Admin123!")) // NOSONAR
 				.setRoles(new HashSet<>(Arrays.asList(userRole)));
 			userRepository.save(admin);
 

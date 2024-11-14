@@ -4,7 +4,6 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -18,6 +17,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
+import jakarta.persistence.ManyToOne;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
@@ -45,11 +45,9 @@ public class User implements UserDetails {
 	@JoinTable(name = "users_roles", joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"), inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id"))
 	private Set<Role> roles;
 
-	@ManyToMany(fetch = FetchType.EAGER)
-	@JoinTable(name = "users_refresh-tokens", joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"), inverseJoinColumns = @JoinColumn(name = "refresh-token_id", referencedColumnName = "token"))
+	@ManyToOne
 	private Set<RefreshToken> refreshTokens;
 
-	@Cacheable(value = "userAuthorities", key = "#this.username")
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
 

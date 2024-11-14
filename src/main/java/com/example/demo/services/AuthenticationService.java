@@ -1,19 +1,18 @@
 package com.example.demo.services;
 
 import java.time.LocalDateTime;
-import java.util.Collection;
-import java.util.HashSet;
+import java.util.Arrays;
 
 import org.modelmapper.ModelMapper;
-import org.springframework.cache.annotation.Cacheable;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import com.example.demo.dto.UserDto;
 import com.example.demo.models.RefreshToken;
@@ -21,8 +20,12 @@ import com.example.demo.models.User;
 import com.example.demo.repositories.RefreshTokenRepository;
 import com.example.demo.repositories.UserRepository;
 import com.example.demo.requests.LoginRequest;
+import com.example.demo.requests.RefreshRequest;
 import com.example.demo.responses.LoginResponse;
+import com.example.demo.responses.RefreshResponse;
 
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 
@@ -59,7 +62,7 @@ public class AuthenticationService {
 		response.addCookie(jwtService.generateTokenCookie(token));
 		response.addCookie(jwtService.generateRefreshTokenCookie(refreshToken));
 
-		saveRefreshToken(refreshToken, model.isRemember());
+		saveRefreshToken(refreshToken, user, model.isRemember());
 		deleteExpiredTokens();
 
 		return new LoginResponse() {
@@ -74,20 +77,60 @@ public class AuthenticationService {
 
 	}
 
-	@Cacheable(value = "userAuthorities", key = "#username")
-	public Collection<? extends GrantedAuthority> getAuthorities(String username) {
+	public RefreshResponse refreshToken(HttpServletResponse response, HttpServletRequest request,
+		RefreshRequest model) {
 
-		return userRepository.findByUsername(username)
-			.map(User::getAuthorities)
-			.orElse(new HashSet<>());
+		try {
+
+			final Cookie[] cookies = request.getCookies() != null ? request.getCookies() : new Cookie[0];
+
+			String refreshTokenValue = Arrays.stream(cookies).filter(c -> c.getName().equals("refreshToken"))
+				.map(Cookie::getValue).findFirst()
+				.orElse(null);
+
+			if (!model.getRefreshToken().isBlank()) {
+
+				refreshTokenValue = model.getRefreshToken();
+
+			}
+
+			RefreshToken refreshToken = refreshTokenRepository.findByToken(refreshTokenValue)
+				.orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Refresh token not found"));
+
+			final String username = jwtService.extractUsername(refreshTokenValue);
+
+			String token = jwtService.generateToken(username);
+			String newRefreshToken = jwtService.generateRefreshToken(username);
+
+			response.addCookie(jwtService.generateTokenCookie(token));
+			response.addCookie(jwtService.generateRefreshTokenCookie(newRefreshToken));
+
+			refreshToken.setToken(newRefreshToken);
+			refreshTokenRepository.save(refreshToken);
+
+			return new RefreshResponse() {
+				{
+
+					setToken(token);
+					setRefreshToken(newRefreshToken);
+
+				}
+			};
+
+		} catch (Exception ex) {
+
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Error refreshing token", ex);
+
+		}
 
 	}
 
-	private void saveRefreshToken(String refreshToken, boolean remember) {
+	private void saveRefreshToken(String refreshToken, User user, boolean remember) {
 
 		RefreshToken refreshTokenEntity = new RefreshToken()
 			.setToken(refreshToken)
 			.setRemember(remember)
+			.setUser(user)
 			.setExpiryTime(jwtService.getRefreshExpirationLocalDateTime());
 
 		refreshTokenRepository.save(refreshTokenEntity);

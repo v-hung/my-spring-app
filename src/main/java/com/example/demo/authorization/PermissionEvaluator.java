@@ -6,21 +6,14 @@ import java.util.Collection;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import com.example.demo.models.Permission;
 import com.example.demo.models.PermissionCheckType;
 import com.example.demo.models.PermissionType;
-import com.example.demo.services.AuthenticationService;
-
-import lombok.RequiredArgsConstructor;
 
 @Component("permissionEvaluator")
-@RequiredArgsConstructor
 public class PermissionEvaluator {
-
-	private final AuthenticationService authenticationService;
 
 	public boolean hasPermission(Authentication authentication, String resource, PermissionType permissionType,
 		String[] value, PermissionCheckType permissionCheckType) {
@@ -32,9 +25,7 @@ public class PermissionEvaluator {
 
 		}
 
-		UserDetails userDetails = (UserDetails)authentication.getPrincipal();
-
-		var authorities = authenticationService.getAuthorities(userDetails.getUsername());
+		var authorities = authentication.getAuthorities();
 
 		boolean isAdmin = authorities.stream()
 			.anyMatch(grantedAuthority -> grantedAuthority.getAuthority().equals("ADMIN"));

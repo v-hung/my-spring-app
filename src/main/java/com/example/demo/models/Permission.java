@@ -1,5 +1,7 @@
 package com.example.demo.models;
 
+import java.io.Serializable;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -12,7 +14,7 @@ import lombok.experimental.Accessors;
 @Entity
 @Data
 @Accessors(chain = true)
-public class Permission {
+public class Permission implements Serializable {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)

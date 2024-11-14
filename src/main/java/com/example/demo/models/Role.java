@@ -1,5 +1,6 @@
 package com.example.demo.models;
 
+import java.io.Serializable;
 import java.util.Set;
 
 import jakarta.persistence.Entity;
@@ -16,7 +17,7 @@ import lombok.experimental.Accessors;
 @Entity
 @Data
 @Accessors(chain = true)
-public class Role {
+public class Role implements Serializable {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
