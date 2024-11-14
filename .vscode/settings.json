@@ -8,8 +8,7 @@
     },
     "files.autoSave": "off",
     "editor.formatOnSave": true,
-    "sonarlint.pathToNodeExecutable": "/usr/bin/node",
     "editor.wordWrap": "on",
-    "IDX.aI.enableInlineCompletion": true,
-    "IDX.aI.enableCodebaseIndexing": true
+    "workbench.iconTheme": "material-icon-theme",
+    "workbench.colorTheme": "IDX Monospace Light",
 }
