@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.Arrays;
 
 import org.modelmapper.ModelMapper;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -43,7 +44,7 @@ public class AuthenticationService {
 
 	private final ModelMapper mapper;
 
-	public LoginResponse login(HttpServletResponse response, LoginRequest model) {
+	public LoginResponse login(HttpServletResponse servletResponse, LoginRequest model) {
 
 		Authentication authentication = authenticationManager
 			.authenticate(new UsernamePasswordAuthenticationToken(model.getUsername(), model.getPassword()));
@@ -54,30 +55,25 @@ public class AuthenticationService {
 
 		User user = userRepository.findByUsername(userDetails.getUsername())
 			.orElseThrow(() -> new UsernameNotFoundException("User not found"));
-		;
 
 		String token = jwtService.generateToken(authentication.getName());
 		String refreshToken = jwtService.generateRefreshToken(authentication.getName());
 
-		response.addCookie(jwtService.generateTokenCookie(token));
-		response.addCookie(jwtService.generateRefreshTokenCookie(refreshToken));
+		servletResponse.addHeader(HttpHeaders.SET_COOKIE, jwtService.generateTokenCookie(token).toString());
+		servletResponse.addHeader(HttpHeaders.SET_COOKIE,
+			jwtService.generateRefreshTokenCookie(refreshToken).toString());
 
 		saveRefreshToken(refreshToken, user, model.isRemember());
 		deleteExpiredTokens();
 
-		return new LoginResponse() {
-			{
-
-				setUser(mapper.map(user, UserDto.class));
-				setToken(token);
-				setRefreshToken(refreshToken);
-
-			}
-		};
+		return new LoginResponse()
+			.setUser(mapper.map(user, UserDto.class))
+			.setToken(token)
+			.setRefreshToken(refreshToken);
 
 	}
 
-	public RefreshResponse refreshToken(HttpServletResponse response, HttpServletRequest request,
+	public RefreshResponse refreshToken(HttpServletResponse servletResponse, HttpServletRequest request,
 		RefreshRequest model) {
 
 		try {
@@ -102,20 +98,16 @@ public class AuthenticationService {
 			String token = jwtService.generateToken(username);
 			String newRefreshToken = jwtService.generateRefreshToken(username);
 
-			response.addCookie(jwtService.generateTokenCookie(token));
-			response.addCookie(jwtService.generateRefreshTokenCookie(newRefreshToken));
+			servletResponse.addHeader(HttpHeaders.SET_COOKIE, jwtService.generateTokenCookie(token).toString());
+			servletResponse.addHeader(HttpHeaders.SET_COOKIE,
+				jwtService.generateRefreshTokenCookie(newRefreshToken).toString());
 
 			refreshToken.setToken(newRefreshToken);
 			refreshTokenRepository.save(refreshToken);
 
-			return new RefreshResponse() {
-				{
-
-					setToken(token);
-					setRefreshToken(newRefreshToken);
-
-				}
-			};
+			return new RefreshResponse()
+				.setToken(token)
+				.setRefreshToken(newRefreshToken);
 
 		} catch (Exception ex) {
 

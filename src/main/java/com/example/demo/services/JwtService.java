@@ -10,6 +10,7 @@ import java.util.function.Function;
 import javax.crypto.SecretKey;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseCookie;
 import org.springframework.stereotype.Service;
 
 import io.jsonwebtoken.Claims;
@@ -121,31 +122,29 @@ public class JwtService {
 
 	}
 
-	public Cookie generateTokenCookie(String token) {
+	public ResponseCookie generateTokenCookie(String token) {
 
-		return new Cookie("token", token) {
-			{
-
-				setHttpOnly(true);
-				setPath("/");
-				setMaxAge((int)jwtExpiration);
-
-			}
-		};
+		return ResponseCookie
+			.from("token", token)
+			.secure(true)
+			.httpOnly(true)
+			.path("/")
+			.maxAge(jwtExpiration / 1000)
+			.sameSite("None")
+			.build();
 
 	}
 
-	public Cookie generateRefreshTokenCookie(String refreshToken) {
+	public ResponseCookie generateRefreshTokenCookie(String refreshToken) {
 
-		return new Cookie("refreshToken", refreshToken) {
-			{
-
-				setHttpOnly(true);
-				setPath("/");
-				setMaxAge((int)refreshExpiration);
-
-			}
-		};
+		return ResponseCookie
+			.from("refreshToken", refreshToken)
+			.secure(true)
+			.httpOnly(true)
+			.path("/")
+			.maxAge(refreshExpiration / 1000)
+			.sameSite("None")
+			.build();
 
 	}
 
