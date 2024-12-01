@@ -39,7 +39,8 @@ public class SecurityConfig {
 
 		CorsConfiguration configuration = new CorsConfiguration();
 		configuration.setAllowedOrigins(Arrays.asList(
-			"https://5173-idx-vue-sample-1729223431861.cluster-mwrgkbggpvbq6tvtviraw2knqg.cloudworkstations.dev"));
+			"https://5173-idx-vue-sample-1729223431861.cluster-mwrgkbggpvbq6tvtviraw2knqg.cloudworkstations.dev",
+			"http://localhost:5173"));
 		configuration.setAllowedMethods(Arrays.asList("GET", "POST"));
 		configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type"));
 		configuration.setAllowCredentials(true);

@@ -45,6 +45,7 @@ public class DataInitializer implements CommandLineRunner {
 
 			User admin = new User()
 				.setUsername(DEFAULT_USERNAME)
+				.setName("Admin")
 				.setEmail(DEFAULT_USERNAME)
 				.setPassword(passwordEncoder.encode("Admin123!")) // NOSONAR
 				.setRoles(new HashSet<>(Arrays.asList(userRole)));

@@ -9,11 +9,13 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 import jakarta.validation.constraints.NotNull;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.experimental.Accessors;
 
 @Entity
-@Data
+@Getter
+@Setter
 @Accessors(chain = true)
 public class RefreshToken implements Serializable {
 

@@ -117,6 +117,12 @@ public class AuthenticationService {
 
 	}
 
+	public User getCurrentUser() {
+
+		return (User)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+	}
+
 	private void saveRefreshToken(String refreshToken, User user, boolean remember) {
 
 		RefreshToken refreshTokenEntity = new RefreshToken()

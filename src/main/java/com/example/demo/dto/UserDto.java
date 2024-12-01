@@ -5,9 +5,11 @@ import java.util.Set;
 
 import com.example.demo.models.Role;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
-@Data
+@Getter
+@Setter
 public class UserDto {
 
 	private Long id;
