@@ -80,6 +80,12 @@ public class AuthenticationService {
 
 			final Cookie[] cookies = request.getCookies() != null ? request.getCookies() : new Cookie[0];
 
+			for (Cookie cookie : cookies) {
+
+				System.out.println("Cookie name: " + cookie.getName() + ", Cookie value: " + cookie.getValue());
+
+			}
+
 			String refreshTokenValue = Arrays.stream(cookies).filter(c -> c.getName().equals("refreshToken"))
 				.map(Cookie::getValue).findFirst()
 				.orElse(null);

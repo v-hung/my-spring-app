@@ -125,11 +125,12 @@ public class JwtService {
 
 		return ResponseCookie
 			.from("token", token)
-			.secure(true)
+			// .secure(true)
+			// .sameSite("None")
+			.sameSite("Lax")
 			.httpOnly(true)
 			.path("/")
 			.maxAge(jwtExpiration / 1000)
-			.sameSite("None")
 			.build();
 
 	}
@@ -138,11 +139,12 @@ public class JwtService {
 
 		return ResponseCookie
 			.from("refreshToken", refreshToken)
-			.secure(true)
+			// .secure(true)
+			// .sameSite("None")
+			.sameSite("Lax")
 			.httpOnly(true)
 			.path("/")
 			.maxAge(refreshExpiration / 1000)
-			.sameSite("None")
 			.build();
 
 	}

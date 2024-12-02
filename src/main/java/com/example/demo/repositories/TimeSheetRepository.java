@@ -17,4 +17,6 @@ public interface TimeSheetRepository extends JpaRepository<TimeSheet, UUID> {
 
 	List<TimeSheet> findByDateBetween(LocalDate startDate, LocalDate endDate);
 
+	List<TimeSheet> findByUserIdAndDateBetween(int userId, LocalDate startDate, LocalDate endDate);
+
 }

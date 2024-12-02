@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.demo.models.TimeSheet;
 import com.example.demo.models.User;
+import com.example.demo.models.WorkTime;
 import com.example.demo.services.AuthenticationService;
 import com.example.demo.services.TimeSheetService;
 
@@ -77,6 +78,15 @@ public class TimeSheetController {
 		List<TimeSheet> monthlyTimeSheets = timeSheetService.getMonthlyTimeSheets(user.getId(), month);
 
 		return ResponseEntity.ok(monthlyTimeSheets);
+
+	}
+
+	@PreAuthorize("isAuthenticated()")
+	@GetMapping("/work-times")
+	public ResponseEntity<WorkTime> getTimes() {
+
+		User user = authenticationService.getCurrentUser();
+		return ResponseEntity.ok(timeSheetService.getUserWorkTime(user.getId()));
 
 	}
 }

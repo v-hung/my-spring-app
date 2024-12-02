@@ -49,7 +49,7 @@ public class AccountController {
 
 	@PostMapping("/refresh-token")
 	public RefreshResponse refreshToken(HttpServletResponse response, HttpServletRequest request,
-		@RequestBody RefreshRequest model) {
+		@RequestBody(required = false) RefreshRequest model) {
 
 		return authenticationService.refreshToken(response, request, model);
 

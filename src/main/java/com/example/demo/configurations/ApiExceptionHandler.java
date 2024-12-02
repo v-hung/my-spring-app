@@ -2,6 +2,7 @@ package com.example.demo.configurations;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -41,17 +42,31 @@ public class ApiExceptionHandler {
 
 	}
 
-	@ExceptionHandler(Exception.class)
-	public ResponseEntity<ErrorResponse> handleGenericException(Exception ex, HttpServletRequest request) {
+	@ExceptionHandler(AccessDeniedException.class)
+	public ResponseEntity<ErrorResponse> handleAccessDeniedException(AccessDeniedException ex,
+		HttpServletRequest request) {
 
 		ErrorResponse errorResponse = new ErrorResponse()
-			.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value())
+			.setStatus(HttpStatus.FORBIDDEN.value())
 			.setMessage(ex.getMessage())
 			.setPath(request.getRequestURI())
-			.setError(HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase());
+			.setError(HttpStatus.FORBIDDEN.getReasonPhrase());
 
-		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
+		return ResponseEntity.status(HttpStatus.FORBIDDEN).body(errorResponse);
 
 	}
+
+	// @ExceptionHandler(Exception.class)
+	// public ResponseEntity<ErrorResponse> handleGenericException(Exception ex, HttpServletRequest request) {
+
+	// 	ErrorResponse errorResponse = new ErrorResponse()
+	// 		.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value())
+	// 		.setMessage(ex.getMessage())
+	// 		.setPath(request.getRequestURI())
+	// 		.setError(HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase());
+
+	// 	return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
+
+	// }
 
 }

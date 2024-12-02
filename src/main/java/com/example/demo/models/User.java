@@ -17,6 +17,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import lombok.Getter;
 import lombok.Setter;
@@ -52,6 +53,9 @@ public class User implements UserDetails {
 
 	@OneToMany
 	private Set<RefreshToken> refreshTokens;
+
+	@ManyToOne
+	private WorkTime workTime;
 
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {

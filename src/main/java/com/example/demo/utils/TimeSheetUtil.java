@@ -3,7 +3,7 @@ package com.example.demo.utils;
 import java.time.Duration;
 import java.time.LocalTime;
 
-import com.example.demo.constant.TimeSheetConst;
+import com.example.demo.models.WorkTime;
 
 public class TimeSheetUtil {
 	private TimeSheetUtil() {
@@ -14,16 +14,22 @@ public class TimeSheetUtil {
 
 	public static int calculateWorkDay(LocalTime starTime, LocalTime endTime) {
 
+		return calculateWorkDay(starTime, endTime, new WorkTime());
+
+	}
+
+	public static int calculateWorkDay(LocalTime starTime, LocalTime endTime, WorkTime workTime) {
+
 		int totalWorkingMinutes = 0;
 
 		// Calculate morning work minutes
-		if (starTime.isBefore(TimeSheetConst.END_TIME_MORNING)) {
+		if (starTime.isBefore(workTime.getEndTimeMorning())) {
 
-			LocalTime validMorningStart = starTime.isBefore(TimeSheetConst.START_TIME_MORNING)
-				? TimeSheetConst.START_TIME_MORNING
+			LocalTime validMorningStart = starTime.isBefore(workTime.getStartTimeMorning())
+				? workTime.getStartTimeMorning()
 				: starTime;
-			LocalTime validMorningEnd = endTime.isAfter(TimeSheetConst.END_TIME_MORNING)
-				? TimeSheetConst.END_TIME_MORNING
+			LocalTime validMorningEnd = endTime.isAfter(workTime.getEndTimeMorning())
+				? workTime.getEndTimeMorning()
 				: endTime;
 
 			if (validMorningStart.isBefore(validMorningEnd)) {
@@ -35,12 +41,12 @@ public class TimeSheetUtil {
 		}
 
 		// Calculate afternoon work minutes
-		if (endTime.isAfter(TimeSheetConst.START_TIME_AFTERNOON)) {
+		if (endTime.isAfter(workTime.getStartTimeAfternoon())) {
 
-			LocalTime validAfternoonStart = starTime.isAfter(TimeSheetConst.START_TIME_AFTERNOON) ? starTime
-				: TimeSheetConst.START_TIME_AFTERNOON;
-			LocalTime validAfternoonEnd = endTime.isAfter(TimeSheetConst.END_TIME_AFTERNOON)
-				? TimeSheetConst.END_TIME_AFTERNOON
+			LocalTime validAfternoonStart = starTime.isAfter(workTime.getStartTimeAfternoon()) ? starTime
+				: workTime.getStartTimeAfternoon();
+			LocalTime validAfternoonEnd = endTime.isAfter(workTime.getEndTimeAfternoon())
+				? workTime.getEndTimeAfternoon()
 				: endTime;
 			// LocalTime validAfternoonEnd = endTime;
 

@@ -14,7 +14,9 @@ import org.springframework.stereotype.Service;
 import com.example.demo.exception.BusinessException;
 import com.example.demo.models.TimeSheet;
 import com.example.demo.models.User;
+import com.example.demo.models.WorkTime;
 import com.example.demo.repositories.TimeSheetRepository;
+import com.example.demo.repositories.WorkTimeRepository;
 import com.example.demo.utils.TimeSheetUtil;
 
 import lombok.RequiredArgsConstructor;
@@ -24,6 +26,8 @@ import lombok.RequiredArgsConstructor;
 public class TimeSheetService {
 
 	private final TimeSheetRepository timeSheetRepository;
+
+	private final WorkTimeRepository workTimeRepository;
 
 	public TimeSheet performCheckIn(int userId) {
 
@@ -67,7 +71,7 @@ public class TimeSheetService {
 		LocalDate startDate = month.atDay(1);
 		LocalDate endDate = month.atEndOfMonth();
 
-		List<TimeSheet> timeSheets = timeSheetRepository.findByDateBetween(startDate, endDate);
+		List<TimeSheet> timeSheets = timeSheetRepository.findByUserIdAndDateBetween(userId, startDate, endDate);
 
 		Map<LocalDate, TimeSheet> timeSheetMap = timeSheets.stream()
 			.collect(Collectors.toMap(TimeSheet::getDate, ts -> ts));
@@ -86,6 +90,12 @@ public class TimeSheetService {
 		}
 
 		return allDaysInMonth;
+
+	}
+
+	public WorkTime getUserWorkTime(int userId) {
+
+		return workTimeRepository.findByUserId(userId).orElse(new WorkTime());
 
 	}
 
