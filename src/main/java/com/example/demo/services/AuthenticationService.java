@@ -73,7 +73,7 @@ public class AuthenticationService {
 
 	}
 
-	public RefreshResponse refreshToken(HttpServletResponse servletResponse, HttpServletRequest request,
+	public RefreshResponse refreshToken(HttpServletRequest request, HttpServletResponse servletResponse,
 		RefreshRequest model) {
 
 		try {

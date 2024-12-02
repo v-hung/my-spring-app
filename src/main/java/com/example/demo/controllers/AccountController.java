@@ -51,7 +51,7 @@ public class AccountController {
 	public RefreshResponse refreshToken(HttpServletResponse response, HttpServletRequest request,
 		@RequestBody(required = false) RefreshRequest model) {
 
-		return authenticationService.refreshToken(response, request, model);
+		return authenticationService.refreshToken(request, response, model);
 
 	}
 
