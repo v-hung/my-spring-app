@@ -6,6 +6,7 @@ import java.time.YearMonth;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.springframework.http.HttpStatus;
@@ -81,9 +82,9 @@ public class TimeSheetService {
 		for (LocalDate date = startDate; !date.isAfter(endDate); date = date.plusDays(1)) {
 
 			TimeSheet timeSheetOfDate = timeSheetMap.getOrDefault(date, new TimeSheet()
-				.setId(null)
+				.setId(UUID.randomUUID())
 				.setDate(date)
-				.setUser(null));
+				.setUser(new User().setId(userId)));
 
 			allDaysInMonth.add(timeSheetOfDate);
 

@@ -6,17 +6,12 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import com.example.demo.models.PermissionCheckType;
-import com.example.demo.models.PermissionType;
 
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface HasPermission {
 
-	String resource() default "";
-
-	PermissionType permissionType() default PermissionType.READ;
-
-	String[] value() default {};
+	String[] value();
 
 	PermissionCheckType permissionCheckType() default PermissionCheckType.ANY;
 

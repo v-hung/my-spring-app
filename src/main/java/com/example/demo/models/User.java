@@ -8,14 +8,17 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
@@ -42,17 +45,21 @@ public class User implements UserDetails {
 	private String email;
 
 	@Column(nullable = false)
+	@JsonIgnore
 	private String password;
 
 	@OneToMany(cascade = CascadeType.ALL)
-	private Set<TimeSheet> timeSheets;
+	private Set<TimeSheet> timeSheets = new HashSet<>();
 
-	@ManyToMany(cascade = CascadeType.ALL)
-	@JoinTable(name = "users_roles", joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"), inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id"))
-	private Set<Role> roles;
+	@Enumerated(EnumType.STRING)
+	private UserPosition userPosition;
+
+	@ManyToMany
+	@JsonIgnoreProperties("users")
+	private Set<Role> roles = new HashSet<>();
 
 	@OneToMany
-	private Set<RefreshToken> refreshTokens;
+	private Set<RefreshToken> refreshTokens = new HashSet<>();
 
 	@ManyToOne
 	private WorkTime workTime;
@@ -81,6 +88,13 @@ public class User implements UserDetails {
 		}
 
 		return grantedAuthorities;
+
+	}
+
+	@Override
+	public boolean isEnabled() {
+
+		return UserDetails.super.isEnabled();
 
 	}
 }

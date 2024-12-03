@@ -4,6 +4,8 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.UUID;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -32,6 +34,7 @@ public class TimeSheet extends BaseModel {
 	private int workMinutes;
 
 	@ManyToOne
+	@JsonIgnoreProperties("timeSheets")
 	private User user;
 
 }

@@ -3,6 +3,7 @@ package com.example.demo.services;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 
+import org.apache.commons.lang3.StringUtils;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -80,17 +81,11 @@ public class AuthenticationService {
 
 			final Cookie[] cookies = request.getCookies() != null ? request.getCookies() : new Cookie[0];
 
-			for (Cookie cookie : cookies) {
-
-				System.out.println("Cookie name: " + cookie.getName() + ", Cookie value: " + cookie.getValue());
-
-			}
-
 			String refreshTokenValue = Arrays.stream(cookies).filter(c -> c.getName().equals("refreshToken"))
 				.map(Cookie::getValue).findFirst()
 				.orElse(null);
 
-			if (!model.getRefreshToken().isBlank()) {
+			if (model != null && StringUtils.isNotBlank(model.getRefreshToken())) {
 
 				refreshTokenValue = model.getRefreshToken();
 

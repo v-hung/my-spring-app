@@ -8,15 +8,13 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Component;
 
-import com.example.demo.models.Permission;
 import com.example.demo.models.PermissionCheckType;
-import com.example.demo.models.PermissionType;
 
 @Component("permissionEvaluator")
 public class PermissionEvaluator {
 
-	public boolean hasPermission(Authentication authentication, String resource, PermissionType permissionType,
-		String[] value, PermissionCheckType permissionCheckType) {
+	public boolean hasPermission(Authentication authentication, String[] value,
+		PermissionCheckType permissionCheckType) {
 
 		if (authentication == null || authentication instanceof AnonymousAuthenticationToken
 			|| !authentication.isAuthenticated()) {
@@ -27,29 +25,18 @@ public class PermissionEvaluator {
 
 		var authorities = authentication.getAuthorities();
 
-		boolean isAdmin = authorities.stream()
-			.anyMatch(grantedAuthority -> grantedAuthority.getAuthority().equals("ADMIN"));
-
-		if (isAdmin) {
+		if (authorities.stream().anyMatch(grantedAuthority -> grantedAuthority.getAuthority().equals("ADMIN"))) {
 
 			return true;
 
 		}
 
-		if (value != null && value.length > 0) {
+		return switch (permissionCheckType) {
 
-			return switch (permissionCheckType) {
+		case ANY -> hasAnyPermission(authorities, value);
+		case ALL -> hasAllPermissions(authorities, value);
 
-			case ANY -> hasAnyPermission(authorities, value);
-			case ALL -> hasAllPermissions(authorities, value);
-
-			};
-
-		}
-
-		return authorities.stream()
-			.anyMatch(grantedAuthority -> grantedAuthority.getAuthority()
-				.equals(Permission.getName(resource, permissionType)));
+		};
 
 	}
 
@@ -73,6 +60,13 @@ public class PermissionEvaluator {
 
 	}
 
+	/**
+	 * Has All Permissions
+	 *
+	 * @param authorities
+	 * @param permissions
+	 * @return
+	 */
 	private boolean hasAllPermissions(Collection<? extends GrantedAuthority> authorities, String[] permissions) {
 
 		return Arrays.stream(permissions)

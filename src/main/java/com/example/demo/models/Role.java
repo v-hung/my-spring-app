@@ -1,15 +1,15 @@
 package com.example.demo.models;
 
 import java.io.Serializable;
+import java.util.HashSet;
 import java.util.Set;
 
-import jakarta.persistence.CascadeType;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import lombok.Getter;
 import lombok.Setter;
@@ -27,10 +27,12 @@ public class Role implements Serializable {
 
 	private String name;
 
+	private String description;
+
 	private boolean admin = false;
 
-	@ManyToMany(cascade = CascadeType.ALL)
-	@JoinTable(name = "roles_permisstions", joinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id"), inverseJoinColumns = @JoinColumn(name = "permisstion_id", referencedColumnName = "id"))
-	private Set<Permission> permissions;
+	@ManyToMany
+	@JsonIgnoreProperties("roles")
+	private Set<Permission> permissions = new HashSet<>();
 
 }

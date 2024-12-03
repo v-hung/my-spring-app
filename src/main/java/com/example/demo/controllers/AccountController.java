@@ -1,6 +1,7 @@
 package com.example.demo.controllers;
 
 import org.modelmapper.ModelMapper;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -31,27 +32,27 @@ public class AccountController {
 	private final ModelMapper mapper;
 
 	@PostMapping("/login")
-	public LoginResponse login(HttpServletResponse response, @RequestBody LoginRequest model) {
+	public ResponseEntity<LoginResponse> login(HttpServletResponse response, @RequestBody LoginRequest model) {
 
-		return authenticationService.login(response, model);
+		return ResponseEntity.ok(authenticationService.login(response, model));
 
 	}
 
 	@PreAuthorize("isAuthenticated()")
 	@GetMapping("/current")
-	public UserDto getCurrentUser() {
+	public ResponseEntity<UserDto> getCurrentUser() {
 
 		User user = (User)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-		return mapper.map(user, UserDto.class);
+		return ResponseEntity.ok(mapper.map(user, UserDto.class));
 
 	}
 
 	@PostMapping("/refresh-token")
-	public RefreshResponse refreshToken(HttpServletResponse response, HttpServletRequest request,
+	public ResponseEntity<RefreshResponse> refreshToken(HttpServletResponse response, HttpServletRequest request,
 		@RequestBody(required = false) RefreshRequest model) {
 
-		return authenticationService.refreshToken(request, response, model);
+		return ResponseEntity.ok(authenticationService.refreshToken(request, response, model));
 
 	}
 

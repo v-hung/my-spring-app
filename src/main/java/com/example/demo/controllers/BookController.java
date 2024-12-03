@@ -18,15 +18,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequiredArgsConstructor
 public class BookController {
 
-    private final BookRepository bookRepository;
+	private final BookRepository bookRepository;
 
-    // @HasPermission(resource = "BOOK", permissionType = PermissionType.READ)
-    @HasPermission({ "BOOK_READ", "BOOK_UPDATE" })
-    @GetMapping("/")
-    public List<Book> getAllBooks() {
+	@HasPermission("BOOK_READ")
+	@GetMapping("/")
+	public List<Book> getAllBooks() {
 
-        return bookRepository.findAll();
+		return bookRepository.findAll();
 
-    }
+	}
 
 }
