@@ -40,7 +40,7 @@ public class WorkTime implements Serializable {
 	private LocalTime endTimeAfternoon = TimeSheetConst.END_TIME_AFTERNOON;
 
 	@NotNull
-	private int lateMinutes = TimeSheetConst.LATE_MINUTES;
+	private int allowedLateMinutes = TimeSheetConst.ALLOWED_LATE_MINUTES;
 
 	@Column(name = "user_id")
 	private int userId;
