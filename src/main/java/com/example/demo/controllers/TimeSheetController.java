@@ -3,6 +3,7 @@ package com.example.demo.controllers;
 import java.time.YearMonth;
 import java.util.List;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -60,7 +61,13 @@ public class TimeSheetController {
 
 		TimeSheet todayTimeSheet = timeSheetService.getTodayTimeSheet(user.getId());
 
-		return ResponseEntity.ok(todayTimeSheet);
+		if (todayTimeSheet != null) {
+
+			return ResponseEntity.ok(todayTimeSheet);
+
+		}
+
+		return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);
 
 	}
 

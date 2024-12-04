@@ -4,8 +4,6 @@ import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -32,7 +30,6 @@ public class Role implements Serializable {
 	private boolean admin = false;
 
 	@ManyToMany
-	@JsonIgnoreProperties("roles")
 	private Set<Permission> permissions = new HashSet<>();
 
 }

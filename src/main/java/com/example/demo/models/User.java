@@ -9,7 +9,6 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -48,14 +47,13 @@ public class User implements UserDetails {
 	@JsonIgnore
 	private String password;
 
-	@OneToMany(cascade = CascadeType.ALL)
-	private Set<TimeSheet> timeSheets = new HashSet<>();
-
 	@Enumerated(EnumType.STRING)
 	private UserPosition userPosition;
 
+	@OneToMany(cascade = CascadeType.ALL)
+	private Set<TimeSheet> timeSheets = new HashSet<>();
+
 	@ManyToMany
-	@JsonIgnoreProperties("users")
 	private Set<Role> roles = new HashSet<>();
 
 	@OneToMany

@@ -14,7 +14,6 @@ import org.springframework.stereotype.Service;
 
 import com.example.demo.exception.BusinessException;
 import com.example.demo.models.TimeSheet;
-import com.example.demo.models.User;
 import com.example.demo.models.WorkTime;
 import com.example.demo.repositories.TimeSheetRepository;
 import com.example.demo.repositories.WorkTimeRepository;
@@ -34,12 +33,12 @@ public class TimeSheetService {
 
 		if (timeSheetRepository.findByUserIdAndDate(userId, LocalDate.now()).isPresent()) {
 
-			throw new BusinessException(HttpStatus.CONFLICT, "TimeSheet already exists for user with ID: " + userId);
+			throw new BusinessException(HttpStatus.CONFLICT, "TimeSheet already exists");
 
 		}
 
 		TimeSheet timeSheet = new TimeSheet()
-			.setUser(new User().setId(userId))
+			.setUserId(userId)
 			.setDate(LocalDate.now())
 			.setStartTime(LocalTime.now());
 
@@ -50,7 +49,13 @@ public class TimeSheetService {
 	public TimeSheet performCheckOut(int userId) {
 
 		TimeSheet timeSheet = timeSheetRepository.findByUserIdAndDate(userId, LocalDate.now())
-			.orElseThrow(() -> new BusinessException(HttpStatus.NOT_FOUND, userId + " has not checked in yet"));
+			.orElseThrow(() -> new BusinessException(HttpStatus.NOT_FOUND, "Not checked in yet"));
+
+		if (timeSheet.getEndTime() != null) {
+
+			throw new BusinessException(HttpStatus.CONFLICT, "Already checked out");
+
+		}
 
 		var endTime = LocalTime.now();
 
@@ -82,9 +87,9 @@ public class TimeSheetService {
 		for (LocalDate date = startDate; !date.isAfter(endDate); date = date.plusDays(1)) {
 
 			TimeSheet timeSheetOfDate = timeSheetMap.getOrDefault(date, new TimeSheet()
-				.setId(UUID.randomUUID())
-				.setDate(date)
-				.setUser(new User().setId(userId)));
+				.setId(UUID.randomUUID().toString())
+				.setUserId(userId)
+				.setDate(date));
 
 			allDaysInMonth.add(timeSheetOfDate);
 

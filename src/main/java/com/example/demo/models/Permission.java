@@ -1,15 +1,12 @@
 package com.example.demo.models;
 
 import java.io.Serializable;
-import java.util.Set;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.ManyToMany;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
@@ -26,8 +23,7 @@ public class Permission implements Serializable {
 
 	private String name;
 
-	@ManyToMany
-	@JsonIgnoreProperties("permissions")
-	private Set<Role> roles;
+	@Column(name = "role_id")
+	private int roleId;
 
 }

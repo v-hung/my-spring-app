@@ -18,4 +18,6 @@ public class TimeSheetConst {
 
 	public static final LocalTime END_TIME_AFTERNOON = LocalTime.parse("17:30:00");
 
+	public static final int LATE_MINUTES = 60;
+
 }
