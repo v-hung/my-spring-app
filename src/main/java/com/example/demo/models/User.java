@@ -10,6 +10,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import jakarta.annotation.Nonnull;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -21,6 +22,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
@@ -33,6 +35,7 @@ public class User implements UserDetails {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Nonnull
 	private int id;
 
 	private String name;
@@ -48,19 +51,29 @@ public class User implements UserDetails {
 	private String password;
 
 	@Enumerated(EnumType.STRING)
+	@NotNull
 	private UserPosition userPosition;
 
-	@OneToMany(cascade = CascadeType.ALL)
-	private Set<TimeSheet> timeSheets = new HashSet<>();
-
 	@ManyToMany
+	@NotNull
 	private Set<Role> roles = new HashSet<>();
 
 	@OneToMany
+	@NotNull
 	private Set<RefreshToken> refreshTokens = new HashSet<>();
 
 	@ManyToOne
 	private WorkTime workTime;
+
+	@OneToMany(cascade = CascadeType.ALL)
+	@NotNull
+	@JsonIgnore
+	private Set<TimeSheet> timeSheets = new HashSet<>();
+
+	@OneToMany(mappedBy = "creatorId")
+	@Nonnull
+	@JsonIgnore
+	private Set<Ticket> createdTickets = new HashSet<>();
 
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {

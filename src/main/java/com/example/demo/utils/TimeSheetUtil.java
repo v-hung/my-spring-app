@@ -20,32 +20,36 @@ public class TimeSheetUtil {
 
 	public static int calculateWorkDay(LocalTime startTime, LocalTime endTime, WorkTime workTime) {
 
-		int totalWorkingMinutes = 0;
+		if (isInvalidTimeRange(startTime, endTime, workTime)) {
 
-		if (isInvalidTimeRange(startTime, endTime)) {
-
-			return totalWorkingMinutes;
+			return 0;
 
 		}
 
-		// Establish a flexible afternoon end time
-		LocalTime adjustedEndTimeAfternoon = workTime.getEndTimeAfternoon();
+		LocalTime adjustedEndTimeAfternoon = calculateAdjustedEndTimeAfternoon(startTime, workTime);
+		int morningSeconds = calculateMorningSeconds(startTime, endTime, workTime);
+		int afternoonSeconds = calculateAfternoonSeconds(startTime, endTime, adjustedEndTimeAfternoon, workTime);
+
+		return (morningSeconds + afternoonSeconds) / 60;
+
+	}
+
+	private static LocalTime calculateAdjustedEndTimeAfternoon(LocalTime startTime, WorkTime workTime) {
 
 		if (startTime.isAfter(workTime.getStartTimeMorning())) {
 
-			// Calculate the number of minutes late
-			int lateMinutes = minutesBetween(workTime.getStartTimeMorning(), startTime);
-
-			// Limit lateness to a maximum
-			if (lateMinutes <= workTime.getLateMinutes()) {
-
-				adjustedEndTimeAfternoon = workTime.getEndTimeAfternoon().plusMinutes(lateMinutes);
-
-			}
+			int lateSeconds = secondsBetween(workTime.getStartTimeMorning(), startTime);
+			int adjustedSeconds = Math.min(workTime.getAllowedLateMinutes() * 60, lateSeconds);
+			return workTime.getEndTimeAfternoon().plusSeconds(adjustedSeconds);
 
 		}
 
-		// Calculate morning work minutes
+		return workTime.getEndTimeAfternoon();
+
+	}
+
+	private static int calculateMorningSeconds(LocalTime startTime, LocalTime endTime, WorkTime workTime) {
+
 		if (startTime.isBefore(workTime.getEndTimeMorning())) {
 
 			LocalTime validMorningStart = startTime.isBefore(workTime.getStartTimeMorning())
@@ -57,83 +61,50 @@ public class TimeSheetUtil {
 
 			if (validMorningStart.isBefore(validMorningEnd)) {
 
-				totalWorkingMinutes += minutesBetween(validMorningStart, validMorningEnd);
+				return secondsBetween(validMorningStart, validMorningEnd);
 
 			}
 
 		}
 
-		// Calculate afternoon work minutes
+		return 0;
+
+	}
+
+	private static int calculateAfternoonSeconds(LocalTime startTime, LocalTime endTime,
+		LocalTime adjustedEndTimeAfternoon, WorkTime workTime) {
+
 		if (endTime.isAfter(workTime.getStartTimeAfternoon())) {
 
-			LocalTime validAfternoonStart = startTime.isAfter(workTime.getStartTimeAfternoon()) ? startTime
+			LocalTime validAfternoonStart = startTime.isAfter(workTime.getStartTimeAfternoon())
+				? startTime
 				: workTime.getStartTimeAfternoon();
-			LocalTime validAfternoonEnd = endTime.isAfter(workTime.getEndTimeAfternoon())
-				? workTime.getEndTimeAfternoon()
+			LocalTime validAfternoonEnd = endTime.isAfter(adjustedEndTimeAfternoon)
+				? adjustedEndTimeAfternoon
 				: endTime;
-			// LocalTime validAfternoonEnd = endTime; //NOSONA 
 
 			if (validAfternoonStart.isBefore(validAfternoonEnd)) {
 
-				totalWorkingMinutes += minutesBetween(validAfternoonStart, validAfternoonEnd);
+				return secondsBetween(validAfternoonStart, validAfternoonEnd);
 
 			}
 
 		}
 
-	}
-
-	private static int calculateMorningWorkMinutes(LocalTime startTime, LocalTime endTime, WorkTime workTime) {
-
-		if (!startTime.isBefore(workTime.getEndTimeMorning())) {
-
-			return 0;
-
-		}
-
-		LocalTime validMorningStart = startTime.isBefore(workTime.getStartTimeMorning())
-			? workTime.getStartTimeMorning()
-			: startTime;
-		LocalTime validMorningEnd = endTime.isAfter(workTime.getEndTimeMorning())
-			? workTime.getEndTimeMorning()
-			: endTime;
-
-		return validMorningStart.isBefore(validMorningEnd)
-			? minutesBetween(validMorningStart, validMorningEnd)
-			: 0;
+		return 0;
 
 	}
 
-	private static int calculateAfternoonWorkMinutes(LocalTime startTime, LocalTime endTime, WorkTime workTime) {
+	public static int secondsBetween(LocalTime start, LocalTime end) {
 
-		if (!endTime.isAfter(workTime.getStartTimeAfternoon())) {
-
-			return 0;
-
-		}
-
-		LocalTime validAfternoonStart = startTime.isAfter(workTime.getStartTimeAfternoon())
-			? startTime
-			: workTime.getStartTimeAfternoon();
-		LocalTime validAfternoonEnd = endTime.isAfter(workTime.getEndTimeAfternoon())
-			? workTime.getEndTimeAfternoon()
-			: endTime;
-
-		return validAfternoonStart.isBefore(validAfternoonEnd)
-			? minutesBetween(validAfternoonStart, validAfternoonEnd)
-			: 0;
+		return (int)Duration.between(start, end).toSeconds();
 
 	}
 
-	public static int minutesBetween(LocalTime start, LocalTime end) {
+	private static boolean isInvalidTimeRange(LocalTime startTime, LocalTime endTime, WorkTime workTime) {
 
-		return (int)Duration.between(start, end).toMinutes();
-
-	}
-
-	private static boolean isInvalidTimeRange(LocalTime startTime, LocalTime endTime) {
-
-		return startTime == null || endTime == null || startTime.isAfter(endTime);
+		return startTime == null || endTime == null || startTime.isAfter(endTime)
+			|| startTime.isAfter(workTime.getEndTimeAfternoon()) || endTime.isBefore(workTime.getStartTimeMorning());
 
 	}
 }

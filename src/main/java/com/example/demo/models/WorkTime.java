@@ -5,11 +5,11 @@ import java.time.LocalTime;
 
 import com.example.demo.constant.TimeSheetConst;
 
-import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
@@ -25,6 +25,7 @@ public class WorkTime implements Serializable {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private long id;
 
+	@NotBlank
 	private String title;
 
 	@NotNull
@@ -40,9 +41,6 @@ public class WorkTime implements Serializable {
 	private LocalTime endTimeAfternoon = TimeSheetConst.END_TIME_AFTERNOON;
 
 	@NotNull
-	private int lateMinutes = TimeSheetConst.LATE_MINUTES;
-
-	@Column(name = "user_id")
-	private int userId;
+	private int allowedLateMinutes = TimeSheetConst.ALLOWED_LATE_MINUTES;
 
 }
