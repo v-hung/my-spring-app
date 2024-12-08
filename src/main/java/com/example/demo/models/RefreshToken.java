@@ -3,13 +3,11 @@ package com.example.demo.models;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.ManyToOne;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
@@ -29,13 +27,13 @@ public class RefreshToken implements Serializable {
 	@NotBlank
 	private String token;
 
+	@NotNull
 	private boolean remember = false;
 
 	@NotNull
 	private LocalDateTime expiryTime;
 
-	@ManyToOne
-	@JsonIgnore
-	private User user;
+	@Column(name = "user_id", nullable = false)
+	private int userId;
 
 }

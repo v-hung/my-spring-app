@@ -27,10 +27,10 @@ public class TimeSheetUtil {
 		}
 
 		LocalTime adjustedEndTimeAfternoon = calculateAdjustedEndTimeAfternoon(startTime, workTime);
-		int morningMinutes = calculateMorningMinutes(startTime, endTime, workTime);
-		int afternoonMinutes = calculateAfternoonMinutes(startTime, endTime, adjustedEndTimeAfternoon, workTime);
+		int morningSeconds = calculateMorningSeconds(startTime, endTime, workTime);
+		int afternoonSeconds = calculateAfternoonSeconds(startTime, endTime, adjustedEndTimeAfternoon, workTime);
 
-		return morningMinutes + afternoonMinutes;
+		return (morningSeconds + afternoonSeconds) / 60;
 
 	}
 
@@ -38,9 +38,9 @@ public class TimeSheetUtil {
 
 		if (startTime.isAfter(workTime.getStartTimeMorning())) {
 
-			int lateMinutes = minutesBetween(workTime.getStartTimeMorning(), startTime);
-			int adjustedMinutes = Math.min(workTime.getAllowedLateMinutes(), lateMinutes);
-			return workTime.getEndTimeAfternoon().plusMinutes(adjustedMinutes);
+			int lateSeconds = secondsBetween(workTime.getStartTimeMorning(), startTime);
+			int adjustedSeconds = Math.min(workTime.getAllowedLateMinutes() * 60, lateSeconds);
+			return workTime.getEndTimeAfternoon().plusSeconds(adjustedSeconds);
 
 		}
 
@@ -48,7 +48,7 @@ public class TimeSheetUtil {
 
 	}
 
-	private static int calculateMorningMinutes(LocalTime startTime, LocalTime endTime, WorkTime workTime) {
+	private static int calculateMorningSeconds(LocalTime startTime, LocalTime endTime, WorkTime workTime) {
 
 		if (startTime.isBefore(workTime.getEndTimeMorning())) {
 
@@ -61,7 +61,7 @@ public class TimeSheetUtil {
 
 			if (validMorningStart.isBefore(validMorningEnd)) {
 
-				return minutesBetween(validMorningStart, validMorningEnd);
+				return secondsBetween(validMorningStart, validMorningEnd);
 
 			}
 
@@ -71,7 +71,7 @@ public class TimeSheetUtil {
 
 	}
 
-	private static int calculateAfternoonMinutes(LocalTime startTime, LocalTime endTime,
+	private static int calculateAfternoonSeconds(LocalTime startTime, LocalTime endTime,
 		LocalTime adjustedEndTimeAfternoon, WorkTime workTime) {
 
 		if (endTime.isAfter(workTime.getStartTimeAfternoon())) {
@@ -85,7 +85,7 @@ public class TimeSheetUtil {
 
 			if (validAfternoonStart.isBefore(validAfternoonEnd)) {
 
-				return minutesBetween(validAfternoonStart, validAfternoonEnd);
+				return secondsBetween(validAfternoonStart, validAfternoonEnd);
 
 			}
 
@@ -95,9 +95,9 @@ public class TimeSheetUtil {
 
 	}
 
-	public static int minutesBetween(LocalTime start, LocalTime end) {
+	public static int secondsBetween(LocalTime start, LocalTime end) {
 
-		return (int)Duration.between(start, end).toMinutes();
+		return (int)Duration.between(start, end).toSeconds();
 
 	}
 

@@ -129,7 +129,7 @@ public class AuthenticationService {
 		RefreshToken refreshTokenEntity = new RefreshToken()
 			.setToken(refreshToken)
 			.setRemember(remember)
-			.setUser(user)
+			.setUserId(user.getId())
 			.setExpiryTime(jwtService.getRefreshExpirationLocalDateTime());
 
 		refreshTokenRepository.save(refreshTokenEntity);
