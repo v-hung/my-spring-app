@@ -7,6 +7,7 @@ import java.util.UUID;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import jakarta.persistence.ManyToOne;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
@@ -31,7 +32,11 @@ public class TimeSheet extends Timestamp {
 
 	private int workMinutes;
 
-	@Column(name = "user_id", nullable = false)
-	private int userId;
+	// @Column(name = "user_id", nullable = false)
+	// private int userId;
+
+	@ManyToOne
+	@NotNull
+	private User user;
 
 }

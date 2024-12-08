@@ -14,9 +14,8 @@ import org.springframework.stereotype.Service;
 
 import com.example.demo.exception.BusinessException;
 import com.example.demo.models.TimeSheet;
-import com.example.demo.models.WorkTime;
+import com.example.demo.models.User;
 import com.example.demo.repositories.TimeSheetRepository;
-import com.example.demo.repositories.WorkTimeRepository;
 import com.example.demo.utils.TimeSheetUtil;
 
 import lombok.RequiredArgsConstructor;
@@ -27,18 +26,16 @@ public class TimeSheetService {
 
 	private final TimeSheetRepository timeSheetRepository;
 
-	private final WorkTimeRepository workTimeRepository;
+	public TimeSheet performCheckIn(User user) {
 
-	public TimeSheet performCheckIn(int userId) {
-
-		if (timeSheetRepository.findByUserIdAndDate(userId, LocalDate.now()).isPresent()) {
+		if (timeSheetRepository.findByUserAndDate(user, LocalDate.now()).isPresent()) {
 
 			throw new BusinessException(HttpStatus.CONFLICT, "TimeSheet already exists");
 
 		}
 
 		TimeSheet timeSheet = new TimeSheet()
-			.setUserId(userId)
+			.setUser(user)
 			.setDate(LocalDate.now())
 			.setStartTime(LocalTime.now());
 
@@ -46,9 +43,9 @@ public class TimeSheetService {
 
 	}
 
-	public TimeSheet performCheckOut(int userId) {
+	public TimeSheet performCheckOut(User user) {
 
-		TimeSheet timeSheet = timeSheetRepository.findByUserIdAndDate(userId, LocalDate.now())
+		TimeSheet timeSheet = timeSheetRepository.findByUserAndDate(user, LocalDate.now())
 			.orElseThrow(() -> new BusinessException(HttpStatus.NOT_FOUND, "Not checked in yet"));
 
 		if (timeSheet.getEndTime() != null) {
@@ -66,18 +63,18 @@ public class TimeSheetService {
 
 	}
 
-	public TimeSheet getTodayTimeSheet(int userId) {
+	public TimeSheet getTodayTimeSheet(User user) {
 
-		return timeSheetRepository.findByUserIdAndDate(userId, LocalDate.now()).orElse(null);
+		return timeSheetRepository.findByUserAndDate(user, LocalDate.now()).orElse(null);
 
 	}
 
-	public List<TimeSheet> getMonthlyTimeSheets(int userId, YearMonth month) {
+	public List<TimeSheet> getMonthlyTimeSheets(User user, YearMonth month) {
 
 		LocalDate startDate = month.atDay(1);
 		LocalDate endDate = month.atEndOfMonth();
 
-		List<TimeSheet> timeSheets = timeSheetRepository.findByUserIdAndDateBetween(userId, startDate, endDate);
+		List<TimeSheet> timeSheets = timeSheetRepository.findByUserAndDateBetween(user, startDate, endDate);
 
 		Map<LocalDate, TimeSheet> timeSheetMap = timeSheets.stream()
 			.collect(Collectors.toMap(TimeSheet::getDate, ts -> ts));
@@ -88,7 +85,7 @@ public class TimeSheetService {
 
 			TimeSheet timeSheetOfDate = timeSheetMap.getOrDefault(date, new TimeSheet()
 				.setId(UUID.randomUUID().toString())
-				.setUserId(userId)
+				.setUser(user)
 				.setDate(date));
 
 			allDaysInMonth.add(timeSheetOfDate);
@@ -96,12 +93,6 @@ public class TimeSheetService {
 		}
 
 		return allDaysInMonth;
-
-	}
-
-	public WorkTime getUserWorkTime(int userId) {
-
-		return workTimeRepository.findByUserId(userId).orElse(new WorkTime());
 
 	}
 

@@ -19,6 +19,7 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
@@ -70,8 +71,9 @@ public class User implements UserDetails {
 	@JsonIgnore
 	private Set<TimeSheet> timeSheets = new HashSet<>();
 
-	@OneToMany(mappedBy = "creatorId")
+	@OneToMany
 	@Nonnull
+	@JoinColumn(name = "creatorId")
 	@JsonIgnore
 	private Set<Ticket> createdTickets = new HashSet<>();
 

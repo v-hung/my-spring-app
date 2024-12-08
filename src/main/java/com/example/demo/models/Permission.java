@@ -1,8 +1,13 @@
 package com.example.demo.models;
 
 import java.io.Serializable;
+import java.util.HashSet;
+import java.util.Set;
 
-import jakarta.persistence.Column;
+import org.hibernate.annotations.ManyToAny;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -25,7 +30,8 @@ public class Permission implements Serializable {
 	@NotBlank
 	private String name;
 
-	@Column(name = "role_id")
-	private int roleId;
+	@ManyToAny
+	@JsonIgnore
+	private Set<Role> roles = new HashSet<>();
 
 }

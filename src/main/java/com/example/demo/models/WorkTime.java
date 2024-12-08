@@ -5,7 +5,6 @@ import java.time.LocalTime;
 
 import com.example.demo.constant.TimeSheetConst;
 
-import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -43,8 +42,5 @@ public class WorkTime implements Serializable {
 
 	@NotNull
 	private int allowedLateMinutes = TimeSheetConst.ALLOWED_LATE_MINUTES;
-
-	@Column(name = "user_id")
-	private int userId;
 
 }
