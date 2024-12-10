@@ -13,6 +13,7 @@ import com.example.demo.models.User;
 public interface UserRepository extends JpaRepository<User, Integer> {
 
 	// @Cacheable(value = "user", key = "#username")
+	@Query("SELECT u FROM User u WHERE u.username = :username")
 	Optional<User> findByUsername(String username);
 
 	@Cacheable(value = "user:roles_permissions", key = "#username")

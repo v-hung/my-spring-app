@@ -11,7 +11,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.annotation.Nonnull;
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -19,7 +18,6 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
@@ -66,17 +64,6 @@ public class User implements UserDetails {
 	@ManyToOne
 	private WorkTime workTime;
 
-	@OneToMany(cascade = CascadeType.ALL)
-	@NotNull
-	@JsonIgnore
-	private Set<TimeSheet> timeSheets = new HashSet<>();
-
-	@OneToMany
-	@Nonnull
-	@JoinColumn(name = "creatorId")
-	@JsonIgnore
-	private Set<Ticket> createdTickets = new HashSet<>();
-
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
 
@@ -107,7 +94,7 @@ public class User implements UserDetails {
 	@Override
 	public boolean isEnabled() {
 
-		return UserDetails.super.isEnabled();
+		return true;
 
 	}
 }

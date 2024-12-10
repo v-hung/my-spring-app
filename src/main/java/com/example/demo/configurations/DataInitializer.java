@@ -33,9 +33,9 @@ public class DataInitializer implements CommandLineRunner {
 
 		log.info("Starting the database seeding process...");
 
-		// seedAdminUser();
+		seedAdminUser();
 
-		// seedRolesAndPermissions();
+		seedRolesAndPermissions();
 
 		log.info("Database seeding process completed.");
 

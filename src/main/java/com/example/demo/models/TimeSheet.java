@@ -4,6 +4,8 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.UUID;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -37,6 +39,7 @@ public class TimeSheet extends Timestamp {
 
 	@ManyToOne
 	@NotNull
+	@JsonBackReference
 	private User user;
 
 }

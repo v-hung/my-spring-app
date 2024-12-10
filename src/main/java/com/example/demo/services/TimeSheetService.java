@@ -28,7 +28,7 @@ public class TimeSheetService {
 
 	public TimeSheet performCheckIn(User user) {
 
-		if (timeSheetRepository.findByUserAndDate(user, LocalDate.now()).isPresent()) {
+		if (timeSheetRepository.findByUserIdAndDate(user.getId(), LocalDate.now()).isPresent()) {
 
 			throw new BusinessException(HttpStatus.CONFLICT, "TimeSheet already exists");
 
@@ -39,13 +39,15 @@ public class TimeSheetService {
 			.setDate(LocalDate.now())
 			.setStartTime(LocalTime.now());
 
-		return timeSheetRepository.save(timeSheet);
+		timeSheetRepository.save(timeSheet);
+
+		return timeSheet;
 
 	}
 
 	public TimeSheet performCheckOut(User user) {
 
-		TimeSheet timeSheet = timeSheetRepository.findByUserAndDate(user, LocalDate.now())
+		TimeSheet timeSheet = timeSheetRepository.findByUserIdAndDate(user.getId(), LocalDate.now())
 			.orElseThrow(() -> new BusinessException(HttpStatus.NOT_FOUND, "Not checked in yet"));
 
 		if (timeSheet.getEndTime() != null) {
@@ -65,7 +67,7 @@ public class TimeSheetService {
 
 	public TimeSheet getTodayTimeSheet(User user) {
 
-		return timeSheetRepository.findByUserAndDate(user, LocalDate.now()).orElse(null);
+		return timeSheetRepository.findByUserIdAndDate(user.getId(), LocalDate.now()).orElse(null);
 
 	}
 
@@ -74,7 +76,7 @@ public class TimeSheetService {
 		LocalDate startDate = month.atDay(1);
 		LocalDate endDate = month.atEndOfMonth();
 
-		List<TimeSheet> timeSheets = timeSheetRepository.findByUserAndDateBetween(user, startDate, endDate);
+		List<TimeSheet> timeSheets = timeSheetRepository.findByUserIdAndDateBetween(user.getId(), startDate, endDate);
 
 		Map<LocalDate, TimeSheet> timeSheetMap = timeSheets.stream()
 			.collect(Collectors.toMap(TimeSheet::getDate, ts -> ts));

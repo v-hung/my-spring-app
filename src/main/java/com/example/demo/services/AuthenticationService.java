@@ -120,7 +120,25 @@ public class AuthenticationService {
 
 	public User getCurrentUser() {
 
-		return (User)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+		if (authentication != null && authentication.isAuthenticated()) {
+
+			Object principal = authentication.getPrincipal();
+
+			if (principal instanceof UserDetails) {
+
+				return (User)principal;
+
+			} else {
+
+				return null;
+
+			}
+
+		}
+
+		return null;
 
 	}
 
