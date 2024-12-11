@@ -11,6 +11,7 @@ import java.util.stream.Collectors;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.example.demo.exception.BusinessException;
 import com.example.demo.models.TimeSheet;
@@ -26,6 +27,7 @@ public class TimeSheetService {
 
 	private final TimeSheetRepository timeSheetRepository;
 
+	@Transactional
 	public TimeSheet performCheckIn(User user) {
 
 		if (timeSheetRepository.findByUserIdAndDate(user.getId(), LocalDate.now()).isPresent()) {
@@ -45,6 +47,7 @@ public class TimeSheetService {
 
 	}
 
+	@Transactional
 	public TimeSheet performCheckOut(User user) {
 
 		TimeSheet timeSheet = timeSheetRepository.findByUserIdAndDate(user.getId(), LocalDate.now())
@@ -71,6 +74,7 @@ public class TimeSheetService {
 
 	}
 
+	@Transactional(readOnly = true)
 	public List<TimeSheet> getMonthlyTimeSheets(User user, YearMonth month) {
 
 		LocalDate startDate = month.atDay(1);
