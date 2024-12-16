@@ -1,11 +1,9 @@
 package com.example.demo.models;
 
-import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.UUID;
 
-import com.example.demo.annotations.LocalTimeFormat;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
 import jakarta.persistence.Column;
@@ -21,7 +19,7 @@ import lombok.experimental.Accessors;
 @Getter
 @Setter
 @Accessors(chain = true)
-public class TimeSheet extends Timestamp implements Serializable {
+public class TimeSheet extends Timestamp {
 
 	@Id
 	@Column(nullable = false, unique = true)

@@ -1,5 +1,5 @@
 package com.example.demo.models;
 
 public enum TicketType {
-	TIME_SHEET
+	TIMESHEET_ADJUSTMENT, LEAVE_REQUEST, OVERTIME_REQUEST, WORK_FROM_HOME
 }

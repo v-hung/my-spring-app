@@ -1,12 +1,6 @@
-package com.example.demo.configurations;
+package com.example.demo.controllers;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-
-import org.springframework.boot.CommandLineRunner;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.example.demo.models.Permission;
 import com.example.demo.models.Role;
@@ -18,26 +12,34 @@ import com.example.demo.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-@Component
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.bind.annotation.GetMapping;
+
 @Slf4j
 @RequiredArgsConstructor
-public class DataInitializer implements CommandLineRunner {
+@RestController
+public class DataInitializerController {
 
 	private final UserRepository userRepository;
 	private final RoleRepository roleRepository;
 	private final PasswordEncoder passwordEncoder;
 	private final PermissionRepository permissionRepository;
 
-	@Override
-	public void run(String... args) throws Exception {
+	@GetMapping("/initialize-data")
+	public String initializeData() {
 
 		log.info("Starting the database seeding process...");
 
+		// Call the method to seed admin user and roles/permissions
 		seedAdminUser();
-
 		seedRolesAndPermissions();
 
 		log.info("Database seeding process completed.");
+		return "Database seeding completed.";
 
 	}
 

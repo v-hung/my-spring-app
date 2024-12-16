@@ -3,9 +3,9 @@ package com.example.demo.models;
 import java.io.Serializable;
 import java.time.LocalTime;
 
+import com.example.demo.annotations.LocalTimeFormat;
 import com.example.demo.constant.TimeSheetConst;
 
-import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -30,23 +30,23 @@ public class WorkTime implements Serializable {
 	private String title;
 
 	@NotNull
-	@Schema(type = "string", example = "14:30:00.311")
+	@LocalTimeFormat
 	private LocalTime startTimeMorning = TimeSheetConst.START_TIME_MORNING;
 
 	@NotNull
-	@Schema(type = "string", example = "14:30:00.311")
+	@LocalTimeFormat
 	private LocalTime endTimeMorning = TimeSheetConst.END_TIME_MORNING;
 
 	@NotNull
-	@Schema(type = "string", example = "14:30:00.311")
+	@LocalTimeFormat
 	private LocalTime startTimeAfternoon = TimeSheetConst.START_TIME_AFTERNOON;
 
 	@NotNull
-	@Schema(type = "string", example = "14:30:00.311")
+	@LocalTimeFormat
 	private LocalTime endTimeAfternoon = TimeSheetConst.END_TIME_AFTERNOON;
 
 	@NotNull
-	@Schema(type = "string", example = "14:30:00.311")
+	@LocalTimeFormat
 	private int allowedLateMinutes = TimeSheetConst.ALLOWED_LATE_MINUTES;
 
 }

@@ -27,7 +27,10 @@ public class Ticket extends Timestamp {
 	private int approverId;
 
 	@Nonnull
-	private TicketType ticketType;
+	private TicketType type;
+
+	@Nonnull
+	private TicketStatus status;
 
 	@Nonnull
 	private String description;
