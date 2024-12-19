@@ -1,10 +1,13 @@
 package com.example.demo.models;
 
-import jakarta.annotation.Nonnull;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.ManyToOne;
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
@@ -17,22 +20,29 @@ public class Ticket extends Timestamp {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Nonnull
+	@NotNull
 	private long id;
 
-	@Nonnull
-	private int creatorId;
+	@NotNull
+	@ManyToOne
+	private User creator;
 
-	@Nonnull
-	private int approverId;
+	@NotNull
+	@ManyToOne
+	private User approver;
 
-	@Nonnull
+	@NotNull
+	@Enumerated(EnumType.STRING)
 	private TicketType type;
 
-	@Nonnull
-	private TicketStatus status;
+	@NotNull
+	@Enumerated(EnumType.STRING)
+	private TicketStatus status = TicketStatus.PENDING;
 
-	@Nonnull
+	@NotNull
+	private int day;
+
+	@NotNull
 	private String description;
 
 }

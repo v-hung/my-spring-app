@@ -24,8 +24,7 @@ public class PermissionAspect {
 
 		boolean hasAccess = permissionEvaluator.hasPermission(
 			authentication,
-			hasPermission.value(),
-			hasPermission.permissionCheckType());
+			hasPermission.value());
 
 		if (!hasAccess) {
 

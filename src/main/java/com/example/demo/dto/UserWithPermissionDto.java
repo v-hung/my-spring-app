@@ -9,7 +9,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class UserDto {
+public class UserWithPermissionDto {
 
 	@NotNull
 	private Long id;
@@ -24,5 +24,6 @@ public class UserDto {
 	private String email;
 
 	@NotNull
-	private Set<RoleDto> roles = new HashSet<>();
+	private Set<RoleWithPermissionDto> roles = new HashSet<>();
+
 }

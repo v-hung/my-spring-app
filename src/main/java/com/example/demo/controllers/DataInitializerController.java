@@ -3,6 +3,7 @@ package com.example.demo.controllers;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.demo.models.Permission;
+import com.example.demo.models.PermissionType;
 import com.example.demo.models.Role;
 import com.example.demo.models.User;
 import com.example.demo.repositories.PermissionRepository;
@@ -15,6 +16,9 @@ import lombok.extern.slf4j.Slf4j;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -36,7 +40,9 @@ public class DataInitializerController {
 
 		// Call the method to seed admin user and roles/permissions
 		seedAdminUser();
-		seedRolesAndPermissions();
+		Map<String, Role> roleMap = seedRolesAndPermissions();
+
+		seedTestUsers(roleMap);
 
 		log.info("Database seeding process completed.");
 		return "Database seeding completed.";
@@ -45,10 +51,11 @@ public class DataInitializerController {
 
 	private void seedAdminUser() {
 
+		final String DEFAULT_USERNAME = "admin@admin.com";
+		final String DEFAULT_PASSWORD = "Admin123!";
+
 		Role userRole = roleRepository.findByName("admin")
 			.orElseGet(() -> roleRepository.save(new Role().setName("admin").setAdmin(true)));
-
-		final String DEFAULT_USERNAME = "admin@admin.com";
 
 		if (!userRepository.findByUsername(DEFAULT_USERNAME).isPresent()) {
 
@@ -56,7 +63,7 @@ public class DataInitializerController {
 				.setUsername(DEFAULT_USERNAME)
 				.setName("Admin")
 				.setEmail(DEFAULT_USERNAME)
-				.setPassword(passwordEncoder.encode("Admin123!")) // NOSONAR
+				.setPassword(passwordEncoder.encode(DEFAULT_PASSWORD)) // NOSONAR
 				.setRoles(new HashSet<>(Arrays.asList(userRole)));
 			userRepository.save(admin);
 
@@ -64,47 +71,115 @@ public class DataInitializerController {
 
 	}
 
-	private void seedRolesAndPermissions() {
+	private Map<String, Role> seedRolesAndPermissions() {
 
-		List<String> permissions = Arrays.asList(
-			"timesheet_view", "timesheet_create",
-			"inbox_view");
+		// Seed permissions
+		List<PermissionType> permissionTypes = Arrays.asList(PermissionType.values());
 
-		permissions.forEach(permission -> permissionRepository
-			.findByName(permission)
-			.orElseGet(() -> permissionRepository.save(new Permission().setName(permission))));
+		Map<String, Permission> permissionMap = permissionTypes.stream()
+			.collect(Collectors.toMap(
+				PermissionType::name,
+				permission -> permissionRepository
+					.findByName(permission)
+					.orElseGet(() -> permissionRepository.save(new Permission().setName(permission)))));
 
-		List<String> roles = Arrays.asList("hr", "user", "leader");
+		// Seed roles
+		List<Role> roles = List.of(
+			new Role().setName("user").setLevel(1),
+			new Role().setName("leader").setLevel(2), // NOSONAR
+			new Role().setName("hr").setLevel(3));
 
-		roles.forEach(role -> roleRepository
-			.findByName(role)
-			.orElseGet(() -> roleRepository.save(new Role().setName(role))));
+		Map<String, Role> roleMap = roles.stream()
+			.collect(Collectors.toMap(
+				Role::getName,
+				role -> roleRepository
+					.findByName(role.getName())
+					.orElseGet(() -> roleRepository.save(role))));
 
-		// assignPermissionsToRoles();
+		// Assign permissions to roles
+		assignPermissionsToRoles(roleMap, permissionMap);
+
+		return roleMap;
 
 	}
 
-	private void assignPermissionsToRoles() {
+	private void assignPermissionsToRoles(Map<String, Role> roleMap, Map<String, Permission> permissionMap) {
 
-		Role hrRole = roleRepository.findByName("hr").orElseThrow();
-		Role userRole = roleRepository.findByName("user").orElseThrow();
-		Role leaderRole = roleRepository.findByName("leader").orElseThrow();
+		Map<String, List<PermissionType>> rolePermissions = Map.of(
+			"hr", List.of(
+				PermissionType.TIMESHEET_VIEW,
+				PermissionType.TIMESHEET_CREATE,
+				PermissionType.TIMESHEET_APPROVAL,
+				PermissionType.USER_VIEW,
+				PermissionType.USER_CREATE,
+				PermissionType.USER_DELETE,
+				PermissionType.USER_UPDATE),
+			"user", List.of(
+				PermissionType.TIMESHEET_VIEW,
+				PermissionType.TIMESHEET_CREATE,
+				PermissionType.USER_VIEW,
+				PermissionType.USER_UPDATE),
+			"leader", List.of(
+				PermissionType.TIMESHEET_VIEW,
+				PermissionType.TIMESHEET_CREATE,
+				PermissionType.TIMESHEET_APPROVAL,
+				PermissionType.USER_VIEW,
+				PermissionType.USER_UPDATE));
 
-		hrRole.setPermissions(new HashSet<>(Arrays.asList(
-			permissionRepository.findByName("view_user").orElseThrow(),
-			permissionRepository.findByName("edit_user").orElseThrow(),
-			permissionRepository.findByName("deploy_code").orElseThrow(),
-			permissionRepository.findByName("access_code_repo").orElseThrow())));
-		roleRepository.save(hrRole);
+		rolePermissions.forEach((roleName, permissions) -> {
 
-		userRole.setPermissions(new HashSet<>(Arrays.asList(
-			permissionRepository.findByName("view_project").orElseThrow(),
-			permissionRepository.findByName("assign_project").orElseThrow())));
-		roleRepository.save(userRole);
+			Role role = roleMap.get(roleName);
+			role.setPermissions(permissions.stream()
+				.map(permissionType -> permissionMap.get(permissionType.name()))
+				.collect(Collectors.toSet()));
+			roleRepository.save(role);
 
-		leaderRole.setPermissions(new HashSet<>(Arrays.asList(
-			permissionRepository.findByName("perform_testing").orElseThrow())));
-		roleRepository.save(leaderRole);
+		});
+
+	}
+
+	private void seedTestUsers(Map<String, Role> roleMap) {
+
+		final String DEFAULT_PASSWORD = "password";
+
+		List<User> users = List.of(
+			new User()
+				.setName("hung")
+				.setUsername("hung@test.com")
+				.setEmail("hung@test.com")
+				.setPassword(passwordEncoder.encode(DEFAULT_PASSWORD)) // NOSONAR
+				.setRoles(Set.of(roleMap.get("user"))),
+
+			new User()
+				.setName("tung")
+				.setUsername("tung@test.com")
+				.setEmail("tung@test.com")
+				.setPassword(passwordEncoder.encode(DEFAULT_PASSWORD)) // NOSONAR
+				.setRoles(Set.of(roleMap.get("user"))),
+
+			new User()
+				.setName("manh")
+				.setUsername("manh@test.com")
+				.setEmail("manh@test.com")
+				.setPassword(passwordEncoder.encode(DEFAULT_PASSWORD)) // NOSONAR
+				.setRoles(Set.of(roleMap.get("leader"))),
+
+			new User()
+				.setName("phuc")
+				.setUsername("phuc@test.com")
+				.setEmail("phuc@test.com")
+				.setPassword(passwordEncoder.encode(DEFAULT_PASSWORD)) // NOSONAR
+				.setRoles(Set.of(roleMap.get("leader"))),
+
+			new User()
+				.setName("ha")
+				.setUsername("ha@test.com")
+				.setEmail("ha@test.com")
+				.setPassword(passwordEncoder.encode(DEFAULT_PASSWORD)) // NOSONAR
+				.setRoles(Set.of(roleMap.get("hr"))));
+
+		users.forEach(user -> userRepository.findByUsername(user.getUsername())
+			.orElseGet(() -> userRepository.save(user)));
 
 	}
 

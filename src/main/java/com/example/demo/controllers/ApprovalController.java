@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -29,6 +30,7 @@ public class ApprovalController {
 	private final ModelMapper mapper;
 
 	@GetMapping("/candidates")
+	@PreAuthorize("isAuthenticated()")
 	public ResponseEntity<List<UserDto>> getCandidates(@RequestParam TicketType ticketType) {
 
 		User currentUser = authenticationService.getCurrentUser();

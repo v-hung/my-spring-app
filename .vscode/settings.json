@@ -9,5 +9,5 @@
     "files.autoSave": "off",
     "editor.formatOnSave": true,
     "editor.wordWrap": "on",
-    "workbench.colorTheme": "GitHub Dark"
+    // "workbench.colorTheme": "GitHub Dark"
 }

@@ -10,7 +10,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import jakarta.annotation.Nonnull;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -34,7 +33,7 @@ public class User implements UserDetails {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Nonnull
+	@NotNull
 	private int id;
 
 	private String name;
@@ -59,6 +58,7 @@ public class User implements UserDetails {
 
 	@OneToMany
 	@NotNull
+	@JsonIgnore
 	private Set<RefreshToken> refreshTokens = new HashSet<>();
 
 	@ManyToOne
@@ -81,7 +81,7 @@ public class User implements UserDetails {
 
 			for (Permission permission : role.getPermissions()) {
 
-				grantedAuthorities.add(new SimpleGrantedAuthority(permission.getName()));
+				grantedAuthorities.add(new SimpleGrantedAuthority(permission.getName().name()));
 
 			}
 
