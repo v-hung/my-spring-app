@@ -6,6 +6,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -66,6 +67,36 @@ public class TicketController {
 		User currentUser = authenticationService.getCurrentUser();
 
 		Ticket ticket = ticketService.createTicket(ticketRequest, currentUser);
+
+		return ResponseEntity.ok(modelMapper.map(ticket, TicketDto.class));
+
+	}
+
+	@GetMapping("/{id}")
+	@PreAuthorize("isAuthenticated()")
+	public ResponseEntity<TicketDto> getTicket(@PathVariable Long id) {
+
+		Ticket ticket = ticketService.getTicketByCurrentUser(id);
+
+		return ResponseEntity.ok(modelMapper.map(ticket, TicketDto.class));
+
+	}
+
+	@PostMapping("/{id}/cancel")
+	@PreAuthorize("isAuthenticated()")
+	public ResponseEntity<TicketDto> cancelTicket(@PathVariable Long id) {
+
+		Ticket ticket = ticketService.cancelTicket(id);
+
+		return ResponseEntity.ok(modelMapper.map(ticket, TicketDto.class));
+
+	}
+
+	@PostMapping("/{id}/approval")
+	@PreAuthorize("isAuthenticated()")
+	public ResponseEntity<TicketDto> approvalTicket(@PathVariable Long id) {
+
+		Ticket ticket = ticketService.approvalTicket(id);
 
 		return ResponseEntity.ok(modelMapper.map(ticket, TicketDto.class));
 

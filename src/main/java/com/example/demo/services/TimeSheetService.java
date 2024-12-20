@@ -17,7 +17,7 @@ import com.example.demo.exception.BusinessException;
 import com.example.demo.models.TimeSheet;
 import com.example.demo.models.User;
 import com.example.demo.repositories.TimeSheetRepository;
-import com.example.demo.utils.TimeSheetUtil;
+import com.example.demo.utils.TimeSheetUtils;
 
 import lombok.RequiredArgsConstructor;
 
@@ -62,7 +62,7 @@ public class TimeSheetService {
 		var endTime = LocalTime.now();
 
 		timeSheet.setEndTime(endTime);
-		timeSheet.setWorkMinutes(TimeSheetUtil.calculateWorkDay(timeSheet.getStartTime(), endTime));
+		timeSheet.setWorkMinutes(TimeSheetUtils.calculateWorkDay(timeSheet.getStartTime(), endTime));
 
 		return timeSheetRepository.save(timeSheet);
 

@@ -140,42 +140,42 @@ public class DataInitializerController {
 
 	private void seedTestUsers(Map<String, Role> roleMap) {
 
-		final String DEFAULT_PASSWORD = "password";
+		final String DEFAULT_PASSWORD = passwordEncoder.encode("password"); // NOSONAR
 
 		List<User> users = List.of(
 			new User()
 				.setName("hung")
 				.setUsername("hung@test.com")
 				.setEmail("hung@test.com")
-				.setPassword(passwordEncoder.encode(DEFAULT_PASSWORD)) // NOSONAR
+				.setPassword(DEFAULT_PASSWORD)
 				.setRoles(Set.of(roleMap.get("user"))),
 
 			new User()
 				.setName("tung")
 				.setUsername("tung@test.com")
 				.setEmail("tung@test.com")
-				.setPassword(passwordEncoder.encode(DEFAULT_PASSWORD)) // NOSONAR
+				.setPassword(DEFAULT_PASSWORD)
 				.setRoles(Set.of(roleMap.get("user"))),
 
 			new User()
 				.setName("manh")
 				.setUsername("manh@test.com")
 				.setEmail("manh@test.com")
-				.setPassword(passwordEncoder.encode(DEFAULT_PASSWORD)) // NOSONAR
+				.setPassword(DEFAULT_PASSWORD)
 				.setRoles(Set.of(roleMap.get("leader"))),
 
 			new User()
 				.setName("phuc")
 				.setUsername("phuc@test.com")
 				.setEmail("phuc@test.com")
-				.setPassword(passwordEncoder.encode(DEFAULT_PASSWORD)) // NOSONAR
+				.setPassword(DEFAULT_PASSWORD)
 				.setRoles(Set.of(roleMap.get("leader"))),
 
 			new User()
 				.setName("ha")
 				.setUsername("ha@test.com")
 				.setEmail("ha@test.com")
-				.setPassword(passwordEncoder.encode(DEFAULT_PASSWORD)) // NOSONAR
+				.setPassword(DEFAULT_PASSWORD)
 				.setRoles(Set.of(roleMap.get("hr"))));
 
 		users.forEach(user -> userRepository.findByUsername(user.getUsername())

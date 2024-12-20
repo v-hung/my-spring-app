@@ -15,7 +15,7 @@ import lombok.Setter;
 public class RoleWithPermissionDto {
 
 	@NotNull
-	private int id;
+	private long id;
 
 	@NotBlank
 	private String name;

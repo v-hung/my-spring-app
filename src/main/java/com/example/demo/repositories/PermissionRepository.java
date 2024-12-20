@@ -9,7 +9,7 @@ import com.example.demo.models.Permission;
 import com.example.demo.models.PermissionType;
 
 @Repository
-public interface PermissionRepository extends JpaRepository<Permission, Integer> {
+public interface PermissionRepository extends JpaRepository<Permission, Long> {
 
 	Optional<Permission> findByName(PermissionType name);
 

@@ -10,7 +10,7 @@ import lombok.Setter;
 public class RoleDto {
 
 	@NotNull
-	private int id;
+	private long id;
 
 	@NotBlank
 	private String name;

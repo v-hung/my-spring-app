@@ -5,8 +5,8 @@ import java.time.LocalTime;
 
 import com.example.demo.models.WorkTime;
 
-public class TimeSheetUtil {
-	private TimeSheetUtil() {
+public class TimeSheetUtils {
+	private TimeSheetUtils() {
 
 		throw new IllegalStateException("Utility class");
 

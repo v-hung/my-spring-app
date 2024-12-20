@@ -1,12 +1,6 @@
 package com.example.demo.models;
 
 import java.io.Serializable;
-import java.util.HashSet;
-import java.util.Set;
-
-import org.hibernate.annotations.ManyToAny;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -32,9 +26,5 @@ public class Permission implements Serializable {
 	@NotBlank
 	@Enumerated(EnumType.STRING)
 	private PermissionType name;
-
-	@ManyToAny
-	@JsonIgnore
-	private Set<Role> roles = new HashSet<>();
 
 }

@@ -1,6 +1,7 @@
 package com.example.demo.models;
 
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -34,7 +35,7 @@ public class User implements UserDetails {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@NotNull
-	private int id;
+	private long id;
 
 	private String name;
 
@@ -88,6 +89,12 @@ public class User implements UserDetails {
 		}
 
 		return grantedAuthorities;
+
+	}
+
+	public int getCurrentLevel() {
+
+		return roles.stream().map(Role::getLevel).max(Comparator.naturalOrder()).orElse(1);
 
 	}
 

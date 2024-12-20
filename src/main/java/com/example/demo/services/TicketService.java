@@ -1,6 +1,5 @@
 package com.example.demo.services;
 
-import java.util.Comparator;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
@@ -8,11 +7,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.example.demo.exception.BusinessException;
-import com.example.demo.models.Role;
 import com.example.demo.models.Ticket;
 import com.example.demo.models.TicketStatus;
 import com.example.demo.models.User;
 import com.example.demo.repositories.TicketRepository;
+import com.example.demo.repositories.UserRepository;
 import com.example.demo.requests.TicketRequest;
 
 import lombok.AllArgsConstructor;
@@ -25,10 +24,12 @@ public class TicketService {
 
 	private final ApprovalService approvalService;
 
+	private final UserRepository userRepository;
+
+	private final AuthenticationService authenticationService;
+
 	@Transactional
 	public Ticket createTicket(TicketRequest ticketRequest, User user) {
-
-		int currentLevel = user.getRoles().stream().map(Role::getLevel).max(Comparator.naturalOrder()).orElse(1);
 
 		boolean approverIsValid;
 
@@ -37,13 +38,13 @@ public class TicketService {
 		case TIMESHEET_ADJUSTMENT:
 
 			approverIsValid = approvalService.canApproveTimesheetAdjustment(ticketRequest.getApproverId(),
-				currentLevel);
+				user.getCurrentLevel());
 			break;
 
 		case LEAVE_REQUEST:
 
 			approverIsValid = approvalService.canApproveTimesheetAdjustment(ticketRequest.getApproverId(),
-				currentLevel);
+				user.getCurrentLevel());
 			break;
 
 		default:
@@ -57,11 +58,23 @@ public class TicketService {
 
 		}
 
+		if (ticketRepository
+			.findByCreatorIdAndTypeAndDate(user.getId(), ticketRequest.getType(), ticketRequest.getDate())
+			.isPresent()) {
+
+			throw new BusinessException(HttpStatus.CONFLICT, "Ticket already exits.");
+
+		}
+
+		User approverUser = userRepository.findById(ticketRequest.getApproverId())
+			.orElseThrow(() -> new BusinessException(HttpStatus.NOT_FOUND, "Approver user is not found"));
+
 		Ticket ticket = new Ticket()
 			.setCreator(user)
-			.setApprover(new User().setId(ticketRequest.getApproverId()))
+			.setApprover(approverUser)
 			.setType(ticketRequest.getType())
 			.setStatus(TicketStatus.PENDING)
+			.setDate(ticketRequest.getDate())
 			.setDescription(ticketRequest.getDescription());
 
 		ticketRepository.save(ticket);
@@ -81,6 +94,67 @@ public class TicketService {
 	public List<Ticket> getTicketsApprover(User user) {
 
 		return ticketRepository.findByApproverId(user.getId());
+
+	}
+
+	@Transactional(readOnly = true)
+	public Ticket getTicketByCurrentUser(long id) {
+
+		return findTicketByCurrentUser(id);
+
+	}
+
+	@Transactional
+	public Ticket cancelTicket(long id) {
+
+		Ticket ticket = findTicketByCurrentUser(id);
+
+		ticket.setStatus(TicketStatus.CANCELLED);
+
+		ticketRepository.save(ticket);
+
+		return ticket;
+
+	}
+
+	@Transactional
+	public Ticket approvalTicket(long id) {
+
+		User currentUser = authenticationService.getCurrentUser();
+
+		Ticket ticket = ticketRepository.findById(id)
+			.orElseThrow(() -> new BusinessException(HttpStatus.NOT_FOUND, "Ticket does not exits"));
+
+		if (ticket.getApprover().getId() != currentUser.getId()
+			&& approvalService.canApproveTimesheetAdjustment(currentUser.getId(),
+				currentUser.getCurrentLevel())) {
+
+			throw new BusinessException(HttpStatus.FORBIDDEN, "You do not have permission to approval this ticket");
+
+		}
+
+		ticket.setStatus(TicketStatus.CANCELLED);
+
+		ticketRepository.save(ticket);
+
+		return ticket;
+
+	}
+
+	private Ticket findTicketByCurrentUser(long id) {
+
+		User currentUser = authenticationService.getCurrentUser();
+
+		Ticket ticket = ticketRepository.findById(id)
+			.orElseThrow(() -> new BusinessException(HttpStatus.NOT_FOUND, "Ticket does not exits"));
+
+		if (ticket.getCreator().getId() != currentUser.getId()) {
+
+			throw new BusinessException(HttpStatus.FORBIDDEN, "You do not have permission to view this ticket");
+
+		}
+
+		return ticket;
 
 	}
 }

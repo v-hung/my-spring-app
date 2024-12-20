@@ -1,5 +1,8 @@
 package com.example.demo.models;
 
+import java.time.LocalDate;
+
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -39,8 +42,8 @@ public class Ticket extends Timestamp {
 	@Enumerated(EnumType.STRING)
 	private TicketStatus status = TicketStatus.PENDING;
 
-	@NotNull
-	private int day;
+	@Column(nullable = false)
+	private LocalDate date;
 
 	@NotNull
 	private String description;

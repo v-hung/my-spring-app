@@ -6,6 +6,6 @@ import org.springframework.stereotype.Repository;
 import com.example.demo.models.WorkTime;
 
 @Repository
-public interface WorkTimeRepository extends JpaRepository<WorkTime, Integer> {
+public interface WorkTimeRepository extends JpaRepository<WorkTime, Long> {
 
 }

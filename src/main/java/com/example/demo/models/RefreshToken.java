@@ -34,6 +34,6 @@ public class RefreshToken implements Serializable {
 	private LocalDateTime expiryTime;
 
 	@Column(name = "user_id", nullable = false)
-	private int userId;
+	private long userId;
 
 }

@@ -51,7 +51,7 @@ public class ApprovalService {
 	}
 
 	@Transactional(readOnly = true)
-	public boolean canApproveTimesheetAdjustment(int approverId, int requiredLevel) {
+	public boolean canApproveTimesheetAdjustment(long approverId, long requiredLevel) {
 
 		User approverUser = userRepository.findById(approverId).orElseThrow(
 			() -> new BusinessException(HttpStatus.NOT_FOUND, "User is not found"));
