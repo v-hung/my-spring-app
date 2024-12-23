@@ -5,6 +5,7 @@ import org.modelmapper.config.Configuration.AccessLevel;
 import org.modelmapper.convention.NameTokenizers;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.web.config.EnableSpringDataWebSupport;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -14,14 +15,19 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import com.example.demo.repositories.UserRepository;
+import com.querydsl.jpa.impl.JPAQueryFactory;
 
+import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 
 @Configuration
 @RequiredArgsConstructor
+@EnableSpringDataWebSupport(pageSerializationMode = EnableSpringDataWebSupport.PageSerializationMode.VIA_DTO)
 public class ApplicationConfig {
 
 	private final UserRepository userRepository;
+
+	private final EntityManager entityManager;
 
 	@Bean
 	ModelMapper modelMapper() {
@@ -35,6 +41,13 @@ public class ApplicationConfig {
 			.setDestinationNameTokenizer(NameTokenizers.UNDERSCORE);
 
 		return modelMapper;
+
+	}
+
+	@Bean
+	public JPAQueryFactory jpaQueryFactory() {
+
+		return new JPAQueryFactory(entityManager);
 
 	}
 

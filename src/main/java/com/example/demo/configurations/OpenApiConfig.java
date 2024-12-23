@@ -15,8 +15,8 @@ import io.swagger.v3.oas.annotations.servers.Server;
 @OpenAPIDefinition(info = @Info(contact = @Contact(name = "Việt Hùng", email = "viet.hung.2898@gmail.com"), description = "OpenApi document for Spring Security", title = "OpenApi specification - My Spring App", version = "1.0"), security = {
 	@SecurityRequirement(name = "bearerAuth")
 }, servers = {
-	@Server(url = "http://localhost:8081", description = "Local Development Server"),
-	@Server(url = "https://vigilant-fiesta-vgpwvq94pvwc666p-8081.app.github.dev", description = "GitHub Codespaces Server")
+	@Server(url = "http://localhost:8085", description = "Local Development Server"),
+	@Server(url = "https://vigilant-fiesta-vgpwvq94pvwc666p-8085.app.github.dev", description = "GitHub Codespaces Server")
 })
 @SecurityScheme(name = "bearerAuth", description = "Jwt Authentication", scheme = "bearer", type = SecuritySchemeType.HTTP, bearerFormat = "JWT", in = SecuritySchemeIn.HEADER)
 public class OpenApiConfig {

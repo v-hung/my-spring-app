@@ -2,12 +2,18 @@ package com.example.demo.services;
 
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import com.example.demo.exception.BusinessException;
 import com.example.demo.models.User;
+import com.example.demo.models.QRole;
+import com.example.demo.models.QUser;
 import com.example.demo.repositories.UserRepository;
+import com.querydsl.jpa.impl.JPAQueryFactory;
 
 import lombok.AllArgsConstructor;
 
@@ -17,9 +23,24 @@ public class UserService {
 
 	private final UserRepository userRepository;
 
-	public List<User> getAll() {
+	private final JPAQueryFactory factory;
 
-		return userRepository.findAll();
+	public Page<User> getAll(Pageable pageable) {
+
+		QUser user = QUser.user;
+		QRole role = QRole.role;
+
+		// Fetch data with pagination
+		List<User> users = factory.selectFrom(user)
+			.leftJoin(user.roles, role).fetchJoin()
+			.offset(pageable.getOffset())
+			.limit(pageable.getPageSize())
+			.fetch();
+
+		// Fetch total count
+		long total = factory.select(user.count()).from(user).fetchOne();
+
+		return new PageImpl<>(users, pageable, total);
 
 	}
 

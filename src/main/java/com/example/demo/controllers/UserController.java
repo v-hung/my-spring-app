@@ -1,8 +1,9 @@
 package com.example.demo.controllers;
 
-import java.util.List;
-
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -32,13 +33,13 @@ public class UserController {
 	private final ModelMapper modelMapper;
 
 	@GetMapping()
-	public ResponseEntity<List<UserDto>> getUsers() {
+	public ResponseEntity<Page<UserDto>> getUsers(@PageableDefault(size = 20) Pageable pageable) {
 
-		List<User> users = userService.getAll();
+		Page<User> page = userService.getAll(pageable);
 
-		List<UserDto> userDtos = users.stream().map(user -> modelMapper.map(user, UserDto.class)).toList();
+		Page<UserDto> users = page.map(user -> modelMapper.map(user, UserDto.class));
 
-		return ResponseEntity.ok(userDtos);
+		return ResponseEntity.ok(users);
 
 	}
 

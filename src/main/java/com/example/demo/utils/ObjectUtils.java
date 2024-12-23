@@ -2,6 +2,10 @@ package com.example.demo.utils;
 
 import java.lang.reflect.Method;
 
+import org.springframework.http.HttpStatus;
+
+import com.example.demo.exception.BusinessException;
+
 public class ObjectUtils {
 
 	private ObjectUtils() {
@@ -67,7 +71,7 @@ public class ObjectUtils {
 
 		} catch (Exception e) {
 
-			throw new RuntimeException("Error while copying properties", e);
+			throw new BusinessException(HttpStatus.BAD_REQUEST, "Error while copying properties");
 
 		}
 
