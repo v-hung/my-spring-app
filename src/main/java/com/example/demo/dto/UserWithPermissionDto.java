@@ -1,7 +1,7 @@
 package com.example.demo.dto;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
@@ -24,6 +24,6 @@ public class UserWithPermissionDto {
 	private String email;
 
 	@NotNull
-	private Set<RoleWithPermissionDto> roles = new HashSet<>();
+	private List<RoleWithPermissionDto> roles = new ArrayList<>();
 
 }

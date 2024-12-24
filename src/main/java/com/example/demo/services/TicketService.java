@@ -74,6 +74,7 @@ public class TicketService {
 			.setApprover(approverUser)
 			.setType(ticketRequest.getType())
 			.setStatus(TicketStatus.PENDING)
+			.setTypeSpecificData(ticketRequest.getTypeSpecificData())
 			.setDate(ticketRequest.getDate())
 			.setDescription(ticketRequest.getDescription());
 
