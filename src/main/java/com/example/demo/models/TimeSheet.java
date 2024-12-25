@@ -19,7 +19,7 @@ import lombok.experimental.Accessors;
 @Getter
 @Setter
 @Accessors(chain = true)
-public class TimeSheet extends Timestamp {
+public class Timesheet extends Timestamp {
 
 	@Id
 	@Column(nullable = false, unique = true)

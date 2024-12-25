@@ -2,9 +2,9 @@ package com.example.demo.constant;
 
 import java.time.LocalTime;
 
-public class TimeSheetConst {
+public class TimesheetConst {
 
-	private TimeSheetConst() {
+	private TimesheetConst() {
 
 		throw new IllegalStateException("Utility class");
 

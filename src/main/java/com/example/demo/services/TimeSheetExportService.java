@@ -14,7 +14,7 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 
 @Service
-public class TimeSheetExportService {
+public class TimesheetExportService {
 
 	private static final String TEMPLATE_PATH = "templates/template.xlsx";
 

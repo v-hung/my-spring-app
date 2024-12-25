@@ -14,46 +14,46 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.example.demo.exception.BusinessException;
-import com.example.demo.models.TimeSheet;
+import com.example.demo.models.Timesheet;
 import com.example.demo.models.User;
-import com.example.demo.repositories.TimeSheetRepository;
-import com.example.demo.utils.TimeSheetUtils;
+import com.example.demo.repositories.TimesheetRepository;
+import com.example.demo.utils.TimesheetUtils;
 
 import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
-public class TimeSheetService {
+public class TimesheetService {
 
-	private final TimeSheetRepository timeSheetRepository;
+	private final TimesheetRepository timesheetRepository;
 
 	@Transactional
-	public TimeSheet performCheckIn(User user) {
+	public Timesheet performCheckIn(User user) {
 
-		if (timeSheetRepository.findByUserIdAndDate(user.getId(), LocalDate.now()).isPresent()) {
+		if (timesheetRepository.findByUserIdAndDate(user.getId(), LocalDate.now()).isPresent()) {
 
-			throw new BusinessException(HttpStatus.CONFLICT, "TimeSheet already exists");
+			throw new BusinessException(HttpStatus.CONFLICT, "Timesheet already exists");
 
 		}
 
-		TimeSheet timeSheet = new TimeSheet()
+		Timesheet timesheet = new Timesheet()
 			.setUser(user)
 			.setDate(LocalDate.now())
 			.setStartTime(LocalTime.now());
 
-		timeSheetRepository.save(timeSheet);
+		timesheetRepository.save(timesheet);
 
-		return timeSheet;
+		return timesheet;
 
 	}
 
 	@Transactional
-	public TimeSheet performCheckOut(User user) {
+	public Timesheet performCheckOut(User user) {
 
-		TimeSheet timeSheet = timeSheetRepository.findByUserIdAndDate(user.getId(), LocalDate.now())
+		Timesheet timesheet = timesheetRepository.findByUserIdAndDate(user.getId(), LocalDate.now())
 			.orElseThrow(() -> new BusinessException(HttpStatus.NOT_FOUND, "Not checked in yet"));
 
-		if (timeSheet.getEndTime() != null) {
+		if (timesheet.getEndTime() != null) {
 
 			throw new BusinessException(HttpStatus.CONFLICT, "Already checked out");
 
@@ -61,40 +61,40 @@ public class TimeSheetService {
 
 		var endTime = LocalTime.now();
 
-		timeSheet.setEndTime(endTime);
-		timeSheet.setWorkMinutes(TimeSheetUtils.calculateWorkDay(timeSheet.getStartTime(), endTime));
+		timesheet.setEndTime(endTime);
+		timesheet.setWorkMinutes(TimesheetUtils.calculateWorkDay(timesheet.getStartTime(), endTime));
 
-		return timeSheetRepository.save(timeSheet);
+		return timesheetRepository.save(timesheet);
 
 	}
 
-	public TimeSheet getTodayTimeSheet(User user) {
+	public Timesheet getTodayTimesheet(User user) {
 
-		return timeSheetRepository.findByUserIdAndDate(user.getId(), LocalDate.now()).orElse(null);
+		return timesheetRepository.findByUserIdAndDate(user.getId(), LocalDate.now()).orElse(null);
 
 	}
 
 	@Transactional(readOnly = true)
-	public List<TimeSheet> getMonthlyTimeSheets(User user, YearMonth month) {
+	public List<Timesheet> getMonthlyTimesheets(User user, YearMonth month) {
 
 		LocalDate startDate = month.atDay(1);
 		LocalDate endDate = month.atEndOfMonth();
 
-		List<TimeSheet> timeSheets = timeSheetRepository.findByUserIdAndDateBetween(user.getId(), startDate, endDate);
+		List<Timesheet> timesheets = timesheetRepository.findByUserIdAndDateBetween(user.getId(), startDate, endDate);
 
-		Map<LocalDate, TimeSheet> timeSheetMap = timeSheets.stream()
-			.collect(Collectors.toMap(TimeSheet::getDate, ts -> ts));
+		Map<LocalDate, Timesheet> timesheetMap = timesheets.stream()
+			.collect(Collectors.toMap(Timesheet::getDate, ts -> ts));
 
-		List<TimeSheet> allDaysInMonth = new ArrayList<>();
+		List<Timesheet> allDaysInMonth = new ArrayList<>();
 
 		for (LocalDate date = startDate; !date.isAfter(endDate); date = date.plusDays(1)) {
 
-			TimeSheet timeSheetOfDate = timeSheetMap.getOrDefault(date, new TimeSheet()
+			Timesheet timesheetOfDate = timesheetMap.getOrDefault(date, new Timesheet()
 				.setId(UUID.randomUUID().toString())
 				.setUser(user)
 				.setDate(date));
 
-			allDaysInMonth.add(timeSheetOfDate);
+			allDaysInMonth.add(timesheetOfDate);
 
 		}
 

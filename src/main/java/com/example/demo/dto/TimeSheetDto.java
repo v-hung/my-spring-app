@@ -12,7 +12,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class TimeSheetDto {
+public class TimesheetDto {
 
 	@NotNull
 	private String id;

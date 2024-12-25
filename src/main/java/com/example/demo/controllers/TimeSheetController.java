@@ -13,21 +13,21 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.example.demo.dto.TimeSheetDto;
-import com.example.demo.models.TimeSheet;
+import com.example.demo.dto.TimesheetDto;
+import com.example.demo.models.Timesheet;
 import com.example.demo.models.User;
 import com.example.demo.models.WorkTime;
 import com.example.demo.services.AuthenticationService;
-import com.example.demo.services.TimeSheetService;
+import com.example.demo.services.TimesheetService;
 
 import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequestMapping("/api/timesheets")
 @RequiredArgsConstructor
-public class TimeSheetController {
+public class TimesheetController {
 
-	private final TimeSheetService timeSheetService;
+	private final TimesheetService timesheetService;
 
 	private final AuthenticationService authenticationService;
 
@@ -35,39 +35,39 @@ public class TimeSheetController {
 
 	@PreAuthorize("isAuthenticated()")
 	@PostMapping("/checkin")
-	public ResponseEntity<TimeSheetDto> checkIn() {
+	public ResponseEntity<TimesheetDto> checkIn() {
 
 		User user = authenticationService.getCurrentUser();
 
-		TimeSheet timeSheet = timeSheetService.performCheckIn(user);
+		Timesheet timesheet = timesheetService.performCheckIn(user);
 
-		return ResponseEntity.ok(mapper.map(timeSheet, TimeSheetDto.class));
+		return ResponseEntity.ok(mapper.map(timesheet, TimesheetDto.class));
 
 	}
 
 	@PreAuthorize("isAuthenticated()")
 	@PostMapping("/checkout")
-	public ResponseEntity<TimeSheetDto> checkOut() {
+	public ResponseEntity<TimesheetDto> checkOut() {
 
 		User user = authenticationService.getCurrentUser();
 
-		TimeSheet timeSheet = timeSheetService.performCheckOut(user);
+		Timesheet timesheet = timesheetService.performCheckOut(user);
 
-		return ResponseEntity.ok(mapper.map(timeSheet, TimeSheetDto.class));
+		return ResponseEntity.ok(mapper.map(timesheet, TimesheetDto.class));
 
 	}
 
 	@PreAuthorize("isAuthenticated()")
 	@GetMapping("/today")
-	public ResponseEntity<TimeSheetDto> getTodayTimeSheet() {
+	public ResponseEntity<TimesheetDto> getTodayTimesheet() {
 
 		User user = authenticationService.getCurrentUser();
 
-		TimeSheet todayTimeSheet = timeSheetService.getTodayTimeSheet(user);
+		Timesheet todayTimesheet = timesheetService.getTodayTimesheet(user);
 
-		if (todayTimeSheet != null) {
+		if (todayTimesheet != null) {
 
-			return ResponseEntity.ok(mapper.map(todayTimeSheet, TimeSheetDto.class));
+			return ResponseEntity.ok(mapper.map(todayTimesheet, TimesheetDto.class));
 
 		}
 
@@ -77,7 +77,7 @@ public class TimeSheetController {
 
 	@PreAuthorize("isAuthenticated()")
 	@GetMapping("/monthly")
-	public ResponseEntity<List<TimeSheetDto>> getMonthlyTimeSheets(@RequestParam(required = false) YearMonth month) {
+	public ResponseEntity<List<TimesheetDto>> getMonthlyTimesheets(@RequestParam(required = false) YearMonth month) {
 
 		if (month == null) {
 
@@ -86,13 +86,13 @@ public class TimeSheetController {
 		}
 
 		User user = authenticationService.getCurrentUser();
-		List<TimeSheet> monthlyTimeSheets = timeSheetService.getMonthlyTimeSheets(user, month);
+		List<Timesheet> monthlyTimesheets = timesheetService.getMonthlyTimesheets(user, month);
 
-		List<TimeSheetDto> timeSheetDtos = monthlyTimeSheets.stream()
-			.map(timeSheet -> mapper.map(timeSheet, TimeSheetDto.class))
+		List<TimesheetDto> timesheetDtos = monthlyTimesheets.stream()
+			.map(timesheet -> mapper.map(timesheet, TimesheetDto.class))
 			.toList();
 
-		return ResponseEntity.ok(timeSheetDtos);
+		return ResponseEntity.ok(timesheetDtos);
 
 	}
 

@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.time.LocalTime;
 
 import com.example.demo.annotations.LocalTimeFormat;
-import com.example.demo.constant.TimeSheetConst;
+import com.example.demo.constant.TimesheetConst;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -31,22 +31,22 @@ public class WorkTime implements Serializable {
 
 	@NotNull
 	@LocalTimeFormat
-	private LocalTime startTimeMorning = TimeSheetConst.START_TIME_MORNING;
+	private LocalTime startTimeMorning = TimesheetConst.START_TIME_MORNING;
 
 	@NotNull
 	@LocalTimeFormat
-	private LocalTime endTimeMorning = TimeSheetConst.END_TIME_MORNING;
+	private LocalTime endTimeMorning = TimesheetConst.END_TIME_MORNING;
 
 	@NotNull
 	@LocalTimeFormat
-	private LocalTime startTimeAfternoon = TimeSheetConst.START_TIME_AFTERNOON;
+	private LocalTime startTimeAfternoon = TimesheetConst.START_TIME_AFTERNOON;
 
 	@NotNull
 	@LocalTimeFormat
-	private LocalTime endTimeAfternoon = TimeSheetConst.END_TIME_AFTERNOON;
+	private LocalTime endTimeAfternoon = TimesheetConst.END_TIME_AFTERNOON;
 
 	@NotNull
 	@LocalTimeFormat
-	private int allowedLateMinutes = TimeSheetConst.ALLOWED_LATE_MINUTES;
+	private int allowedLateMinutes = TimesheetConst.ALLOWED_LATE_MINUTES;
 
 }

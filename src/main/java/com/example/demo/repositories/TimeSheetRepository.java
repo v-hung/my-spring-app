@@ -7,15 +7,15 @@ import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import com.example.demo.models.TimeSheet;
+import com.example.demo.models.Timesheet;
 
 @Repository
-public interface TimeSheetRepository extends JpaRepository<TimeSheet, String> {
+public interface TimesheetRepository extends JpaRepository<Timesheet, String> {
 
-	Optional<TimeSheet> findByUserIdAndDate(long userId, LocalDate date);
+	Optional<Timesheet> findByUserIdAndDate(long userId, LocalDate date);
 
-	List<TimeSheet> findByDateBetween(LocalDate startDate, LocalDate endDate);
+	List<Timesheet> findByDateBetween(LocalDate startDate, LocalDate endDate);
 
-	List<TimeSheet> findByUserIdAndDateBetween(long userId, LocalDate startDate, LocalDate endDate);
+	List<Timesheet> findByUserIdAndDateBetween(long userId, LocalDate startDate, LocalDate endDate);
 
 }
