@@ -17,7 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
-import com.example.demo.dto.UserWithPermissionDto;
+import com.example.demo.dto.UserDto;
 import com.example.demo.models.RefreshToken;
 import com.example.demo.models.User;
 import com.example.demo.repositories.RefreshTokenRepository;
@@ -69,7 +69,7 @@ public class AuthenticationService {
 		deleteExpiredTokens();
 
 		return new LoginResponse()
-			.setUser(mapper.map(user, UserWithPermissionDto.class))
+			.setUser(mapper.map(user, UserDto.class))
 			.setToken(token)
 			.setRefreshToken(refreshToken);
 

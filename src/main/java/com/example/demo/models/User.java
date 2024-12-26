@@ -21,7 +21,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
-import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
@@ -34,7 +33,6 @@ public class User implements UserDetails {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@NotNull
 	private long id;
 
 	private String name;
@@ -50,15 +48,17 @@ public class User implements UserDetails {
 	private String password;
 
 	@Enumerated(EnumType.STRING)
-	@NotNull
-	private UserPosition userPosition;
+	@Column(nullable = false)
+	private UserPosition position;
+
+	@ManyToOne
+	private User supervisor;
 
 	@ManyToMany
-	@NotNull
+	@Column(nullable = false)
 	private Set<Role> roles = new HashSet<>();
 
 	@OneToMany
-	@NotNull
 	@JsonIgnore
 	private Set<RefreshToken> refreshTokens = new HashSet<>();
 

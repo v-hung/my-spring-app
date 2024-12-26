@@ -6,6 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.example.demo.dto.TicketDto;
 import com.example.demo.exception.BusinessException;
 import com.example.demo.models.Ticket;
 import com.example.demo.models.TicketStatus;
@@ -85,14 +86,14 @@ public class TicketService {
 	}
 
 	@Transactional(readOnly = true)
-	public List<Ticket> getTicketsCreator(User user) {
+	public List<TicketDto> getTicketsCreator(User user) {
 
 		return ticketRepository.findByCreatorId(user.getId());
 
 	}
 
 	@Transactional(readOnly = true)
-	public List<Ticket> getTicketsApprover(User user) {
+	public List<TicketDto> getTicketsApprover(User user) {
 
 		return ticketRepository.findByApproverId(user.getId());
 

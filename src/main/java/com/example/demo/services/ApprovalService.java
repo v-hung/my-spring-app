@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.example.demo.dto.UserDto;
 import com.example.demo.exception.BusinessException;
 import com.example.demo.models.PermissionType;
 import com.example.demo.models.Role;
@@ -22,7 +23,7 @@ public class ApprovalService {
 
 	private final UserRepository userRepository;
 
-	public List<User> getCandidates(TicketType ticketType, User user) {
+	public List<UserDto> getCandidates(TicketType ticketType, User user) {
 
 		switch (ticketType) {
 
@@ -41,7 +42,7 @@ public class ApprovalService {
 
 	}
 
-	private List<User> getCandidatesWithTimesheetAdjustment(User user) {
+	private List<UserDto> getCandidatesWithTimesheetAdjustment(User user) {
 
 		int currentLevel = user.getRoles().stream().map(Role::getLevel).max(Comparator.naturalOrder()).orElse(1);
 

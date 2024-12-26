@@ -6,6 +6,7 @@ import com.example.demo.models.Permission;
 import com.example.demo.models.PermissionType;
 import com.example.demo.models.Role;
 import com.example.demo.models.User;
+import com.example.demo.models.UserPosition;
 import com.example.demo.repositories.PermissionRepository;
 import com.example.demo.repositories.RoleRepository;
 import com.example.demo.repositories.UserRepository;
@@ -148,6 +149,7 @@ public class DataInitializerController {
 				.setUsername("hung@test.com")
 				.setEmail("hung@test.com")
 				.setPassword(DEFAULT_PASSWORD)
+				.setPosition(UserPosition.DEVELOPER)
 				.setRoles(Set.of(roleMap.get("user"))),
 
 			new User()
@@ -155,6 +157,7 @@ public class DataInitializerController {
 				.setUsername("tung@test.com")
 				.setEmail("tung@test.com")
 				.setPassword(DEFAULT_PASSWORD)
+				.setPosition(UserPosition.DEVELOPER)
 				.setRoles(Set.of(roleMap.get("user"))),
 
 			new User()
@@ -162,6 +165,7 @@ public class DataInitializerController {
 				.setUsername("manh@test.com")
 				.setEmail("manh@test.com")
 				.setPassword(DEFAULT_PASSWORD)
+				.setPosition(UserPosition.TEACH_LEADER)
 				.setRoles(Set.of(roleMap.get("leader"))),
 
 			new User()
@@ -169,6 +173,7 @@ public class DataInitializerController {
 				.setUsername("phuc@test.com")
 				.setEmail("phuc@test.com")
 				.setPassword(DEFAULT_PASSWORD)
+				.setPosition(UserPosition.TEACH_LEADER)
 				.setRoles(Set.of(roleMap.get("leader"))),
 
 			new User()
@@ -176,6 +181,7 @@ public class DataInitializerController {
 				.setUsername("ha@test.com")
 				.setEmail("ha@test.com")
 				.setPassword(DEFAULT_PASSWORD)
+				.setPosition(UserPosition.HR_MANAGER)
 				.setRoles(Set.of(roleMap.get("hr"))));
 
 		users.forEach(user -> userRepository.findByUsername(user.getUsername())

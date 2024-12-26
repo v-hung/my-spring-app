@@ -1,9 +1,13 @@
 package com.example.demo.dto;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
-import jakarta.validation.constraints.NotNull;
+import com.example.demo.models.UserPosition;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -11,18 +15,25 @@ import lombok.Setter;
 @Setter
 public class UserDto {
 
-	@NotNull
+	@Column(nullable = false)
 	private Long id;
 
-	@NotNull
+	@Column(nullable = false)
 	private String name;
 
-	@NotNull
+	@Column(nullable = false)
 	private String username;
 
-	@NotNull
+	@Column(nullable = false)
 	private String email;
 
-	@NotNull
-	private Set<RoleDto> roles = new HashSet<>();
+	@Column(nullable = false)
+	@Enumerated(EnumType.STRING)
+	private UserPosition position;
+
+	@Column(nullable = false)
+	private Long supervisorId;
+
+	@Column(nullable = false)
+	private List<RoleDto> roles = new ArrayList<>();
 }

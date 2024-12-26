@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.example.demo.dto.UserWithPermissionDto;
+import com.example.demo.dto.UserDto;
 import com.example.demo.models.User;
 import com.example.demo.requests.LoginRequest;
 import com.example.demo.requests.RefreshRequest;
@@ -40,11 +40,11 @@ public class AccountController {
 
 	@PreAuthorize("isAuthenticated()")
 	@GetMapping("/current")
-	public ResponseEntity<UserWithPermissionDto> getCurrentUser() {
+	public ResponseEntity<UserDto> getCurrentUser() {
 
 		User user = (User)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-		return ResponseEntity.ok(mapper.map(user, UserWithPermissionDto.class));
+		return ResponseEntity.ok(mapper.map(user, UserDto.class));
 
 	}
 

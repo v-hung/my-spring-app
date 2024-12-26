@@ -1,6 +1,6 @@
 package com.example.demo.responses;
 
-import com.example.demo.dto.UserWithPermissionDto;
+import com.example.demo.dto.UserDto;
 
 import lombok.Data;
 import lombok.experimental.Accessors;
@@ -9,7 +9,7 @@ import lombok.experimental.Accessors;
 @Accessors(chain = true)
 public class LoginResponse {
 
-	private UserWithPermissionDto user;
+	private UserDto user;
 
 	private String token;
 

@@ -38,11 +38,9 @@ public class TicketController {
 
 		User currentUser = authenticationService.getCurrentUser();
 
-		List<Ticket> tickets = ticketService.getTicketsCreator(currentUser);
+		List<TicketDto> tickets = ticketService.getTicketsCreator(currentUser);
 
-		List<TicketDto> ticketDtos = tickets.stream().map(ticket -> modelMapper.map(ticket, TicketDto.class)).toList();
-
-		return ResponseEntity.ok(ticketDtos);
+		return ResponseEntity.ok(tickets);
 
 	}
 
@@ -52,11 +50,9 @@ public class TicketController {
 
 		User currentUser = authenticationService.getCurrentUser();
 
-		List<Ticket> tickets = ticketService.getTicketsApprover(currentUser);
+		List<TicketDto> tickets = ticketService.getTicketsApprover(currentUser);
 
-		List<TicketDto> ticketDtos = tickets.stream().map(ticket -> modelMapper.map(ticket, TicketDto.class)).toList();
-
-		return ResponseEntity.ok(ticketDtos);
+		return ResponseEntity.ok(tickets);
 
 	}
 
