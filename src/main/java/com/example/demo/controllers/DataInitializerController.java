@@ -14,11 +14,10 @@ import com.example.demo.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -65,7 +64,7 @@ public class DataInitializerController {
 				.setName("Admin")
 				.setEmail(DEFAULT_USERNAME)
 				.setPassword(passwordEncoder.encode(DEFAULT_PASSWORD)) // NOSONAR
-				.setRoles(new HashSet<>(Arrays.asList(userRole)));
+				.setRoles(Arrays.asList(userRole));
 			userRepository.save(admin);
 
 		}
@@ -85,10 +84,10 @@ public class DataInitializerController {
 					.orElseGet(() -> permissionRepository.save(new Permission().setName(permission)))));
 
 		// Seed roles
-		List<Role> roles = List.of(
+		List<Role> roles = new ArrayList<>(List.of(
 			new Role().setName("user").setLevel(1),
 			new Role().setName("leader").setLevel(2), // NOSONAR
-			new Role().setName("hr").setLevel(3));
+			new Role().setName("hr").setLevel(3)));
 
 		Map<String, Role> roleMap = roles.stream()
 			.collect(Collectors.toMap(
@@ -107,32 +106,33 @@ public class DataInitializerController {
 	private void assignPermissionsToRoles(Map<String, Role> roleMap, Map<String, Permission> permissionMap) {
 
 		Map<String, List<PermissionType>> rolePermissions = Map.of(
-			"hr", List.of(
+			"hr", new ArrayList<>(List.of(
 				PermissionType.TIMESHEET_VIEW,
 				PermissionType.TIMESHEET_CREATE,
 				PermissionType.TIMESHEET_APPROVAL,
 				PermissionType.USER_VIEW,
 				PermissionType.USER_CREATE,
 				PermissionType.USER_DELETE,
-				PermissionType.USER_UPDATE),
-			"user", List.of(
+				PermissionType.USER_UPDATE)),
+			"user", new ArrayList<>(List.of(
 				PermissionType.TIMESHEET_VIEW,
 				PermissionType.TIMESHEET_CREATE,
 				PermissionType.USER_VIEW,
-				PermissionType.USER_UPDATE),
-			"leader", List.of(
+				PermissionType.USER_UPDATE)),
+			"leader", new ArrayList<>(List.of(
 				PermissionType.TIMESHEET_VIEW,
 				PermissionType.TIMESHEET_CREATE,
 				PermissionType.TIMESHEET_APPROVAL,
 				PermissionType.USER_VIEW,
-				PermissionType.USER_UPDATE));
+				PermissionType.USER_UPDATE)));
 
 		rolePermissions.forEach((roleName, permissions) -> {
 
 			Role role = roleMap.get(roleName);
-			role.setPermissions(permissions.stream()
+
+			role.setPermissions(new ArrayList<>(permissions.stream()
 				.map(permissionType -> permissionMap.get(permissionType.name()))
-				.collect(Collectors.toSet()));
+				.toList()));
 			roleRepository.save(role);
 
 		});
@@ -143,14 +143,14 @@ public class DataInitializerController {
 
 		final String DEFAULT_PASSWORD = passwordEncoder.encode("password"); // NOSONAR
 
-		List<User> users = List.of(
+		List<User> users = new ArrayList<>(List.of(
 			new User()
 				.setName("hung")
 				.setUsername("hung@test.com")
 				.setEmail("hung@test.com")
 				.setPassword(DEFAULT_PASSWORD)
 				.setPosition(UserPosition.DEVELOPER)
-				.setRoles(Set.of(roleMap.get("user"))),
+				.setRoles(new ArrayList<>(List.of(roleMap.get("user")))),
 
 			new User()
 				.setName("tung")
@@ -158,7 +158,7 @@ public class DataInitializerController {
 				.setEmail("tung@test.com")
 				.setPassword(DEFAULT_PASSWORD)
 				.setPosition(UserPosition.DEVELOPER)
-				.setRoles(Set.of(roleMap.get("user"))),
+				.setRoles(new ArrayList<>(List.of(roleMap.get("user")))),
 
 			new User()
 				.setName("manh")
@@ -166,7 +166,7 @@ public class DataInitializerController {
 				.setEmail("manh@test.com")
 				.setPassword(DEFAULT_PASSWORD)
 				.setPosition(UserPosition.TEACH_LEADER)
-				.setRoles(Set.of(roleMap.get("leader"))),
+				.setRoles(new ArrayList<>(List.of(roleMap.get("leader")))),
 
 			new User()
 				.setName("phuc")
@@ -174,7 +174,7 @@ public class DataInitializerController {
 				.setEmail("phuc@test.com")
 				.setPassword(DEFAULT_PASSWORD)
 				.setPosition(UserPosition.TEACH_LEADER)
-				.setRoles(Set.of(roleMap.get("leader"))),
+				.setRoles(new ArrayList<>(List.of(roleMap.get("leader")))),
 
 			new User()
 				.setName("ha")
@@ -182,7 +182,7 @@ public class DataInitializerController {
 				.setEmail("ha@test.com")
 				.setPassword(DEFAULT_PASSWORD)
 				.setPosition(UserPosition.HR_MANAGER)
-				.setRoles(Set.of(roleMap.get("hr"))));
+				.setRoles(new ArrayList<>(List.of(roleMap.get("hr"))))));
 
 		users.forEach(user -> userRepository.findByUsername(user.getUsername())
 			.orElseGet(() -> userRepository.save(user)));

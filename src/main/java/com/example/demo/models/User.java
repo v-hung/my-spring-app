@@ -1,15 +1,21 @@
 package com.example.demo.models;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import com.fasterxml.jackson.annotation.JsonIdentityReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -48,22 +54,27 @@ public class User implements UserDetails {
 	private String password;
 
 	@Enumerated(EnumType.STRING)
-	@Column(nullable = false)
 	private UserPosition position;
 
 	@ManyToOne
+	@JsonIdentityReference(alwaysAsId = true)
 	private User supervisor;
 
 	@ManyToMany
 	@Column(nullable = false)
-	private Set<Role> roles = new HashSet<>();
+	@Fetch(FetchMode.JOIN)
+	private List<Role> roles = new ArrayList<>();
 
 	@OneToMany
 	@JsonIgnore
-	private Set<RefreshToken> refreshTokens = new HashSet<>();
+	private List<RefreshToken> refreshTokens = new ArrayList<>();
 
 	@ManyToOne
 	private WorkTime workTime;
+
+	@ManyToMany
+	@JsonIgnoreProperties("teams")
+	private List<Team> teams = new ArrayList<>();
 
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {

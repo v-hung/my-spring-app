@@ -4,16 +4,14 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToMany;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
@@ -22,25 +20,20 @@ import lombok.experimental.Accessors;
 @Getter
 @Setter
 @Accessors(chain = true)
-public class Role implements Serializable {
+public class Team implements Serializable {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private long id;
 
-	@NotBlank
+	@Column(nullable = false)
 	private String name;
 
+	@Column(nullable = false)
 	private String description;
 
-	@NotNull
-	private boolean admin = false;
-
-	@NotNull
-	private int level = 1;
-
 	@ManyToMany
-	@Fetch(FetchMode.JOIN)
-	private List<Permission> permissions = new ArrayList<>();
+	@JsonIgnoreProperties("members")
+	private List<User> members = new ArrayList<>();
 
 }

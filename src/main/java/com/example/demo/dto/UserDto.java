@@ -4,10 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.example.demo.models.UserPosition;
-
-import jakarta.persistence.Column;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -15,25 +14,24 @@ import lombok.Setter;
 @Setter
 public class UserDto {
 
-	@Column(nullable = false)
+	@NotNull
 	private Long id;
 
-	@Column(nullable = false)
+	@NotNull
 	private String name;
 
-	@Column(nullable = false)
+	@NotNull
 	private String username;
 
-	@Column(nullable = false)
+	@NotNull
 	private String email;
 
-	@Column(nullable = false)
 	@Enumerated(EnumType.STRING)
 	private UserPosition position;
 
-	@Column(nullable = false)
-	private Long supervisorId;
+	private UserDto supervisor;
 
-	@Column(nullable = false)
+	@NotNull
 	private List<RoleDto> roles = new ArrayList<>();
+
 }
