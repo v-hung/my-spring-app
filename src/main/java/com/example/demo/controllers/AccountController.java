@@ -29,7 +29,7 @@ public class AccountController {
 
 	private final AuthenticationService authenticationService;
 
-	private final ModelMapper mapper;
+	private final ModelMapper modelMapper;
 
 	@PostMapping("/login")
 	public ResponseEntity<LoginResponse> login(HttpServletResponse response, @RequestBody LoginRequest model) {
@@ -44,7 +44,7 @@ public class AccountController {
 
 		User user = (User)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-		return ResponseEntity.ok(mapper.map(user, UserDto.class));
+		return ResponseEntity.ok(modelMapper.map(user, UserDto.class));
 
 	}
 

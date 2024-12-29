@@ -34,12 +34,17 @@ public class UserService {
 		// Fetch data with pagination
 		List<User> users = factory.selectFrom(user)
 			.leftJoin(user.roles, role).fetchJoin()
-			.offset(pageable.getOffset())
+			.where(role.admin.eq(false))
+			.offset((pageable.getPageNumber() - 1) * pageable.getPageSize())
 			.limit(pageable.getPageSize())
 			.fetch();
 
-		// Fetch total count
-		long total = factory.select(user.count()).from(user).fetchOne();
+		// Fetch total count - thêm join vào query count
+		long total = factory.select(user.countDistinct()) // dùng countDistinct thay vì count
+			.from(user)
+			.leftJoin(user.roles, role) // thêm join
+			.where(role.admin.eq(false))
+			.fetchOne();
 
 		return new PageImpl<>(users, pageable, total);
 

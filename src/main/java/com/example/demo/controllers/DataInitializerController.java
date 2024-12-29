@@ -5,19 +5,22 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.demo.models.Permission;
 import com.example.demo.models.PermissionType;
 import com.example.demo.models.Role;
+import com.example.demo.models.Team;
 import com.example.demo.models.User;
 import com.example.demo.models.UserPosition;
 import com.example.demo.repositories.PermissionRepository;
 import com.example.demo.repositories.RoleRepository;
+import com.example.demo.repositories.TeamRepository;
 import com.example.demo.repositories.UserRepository;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -32,6 +35,7 @@ public class DataInitializerController {
 	private final RoleRepository roleRepository;
 	private final PasswordEncoder passwordEncoder;
 	private final PermissionRepository permissionRepository;
+	private final TeamRepository teamRepository;
 
 	@GetMapping("/initialize-data")
 	public String initializeData() {
@@ -41,8 +45,9 @@ public class DataInitializerController {
 		// Call the method to seed admin user and roles/permissions
 		seedAdminUser();
 		Map<String, Role> roleMap = seedRolesAndPermissions();
+		Map<String, Team> teamMap = seedTeams();
 
-		seedTestUsers(roleMap);
+		seedTestUsers(roleMap, teamMap);
 
 		log.info("Database seeding process completed.");
 		return "Database seeding completed.";
@@ -64,7 +69,7 @@ public class DataInitializerController {
 				.setName("Admin")
 				.setEmail(DEFAULT_USERNAME)
 				.setPassword(passwordEncoder.encode(DEFAULT_PASSWORD)) // NOSONAR
-				.setRoles(Arrays.asList(userRole));
+				.setRoles(new HashSet<>(Arrays.asList(userRole)));
 			userRepository.save(admin);
 
 		}
@@ -84,10 +89,10 @@ public class DataInitializerController {
 					.orElseGet(() -> permissionRepository.save(new Permission().setName(permission)))));
 
 		// Seed roles
-		List<Role> roles = new ArrayList<>(List.of(
+		List<Role> roles = List.of(
 			new Role().setName("user").setLevel(1),
 			new Role().setName("leader").setLevel(2), // NOSONAR
-			new Role().setName("hr").setLevel(3)));
+			new Role().setName("hr").setLevel(3));
 
 		Map<String, Role> roleMap = roles.stream()
 			.collect(Collectors.toMap(
@@ -106,51 +111,69 @@ public class DataInitializerController {
 	private void assignPermissionsToRoles(Map<String, Role> roleMap, Map<String, Permission> permissionMap) {
 
 		Map<String, List<PermissionType>> rolePermissions = Map.of(
-			"hr", new ArrayList<>(List.of(
+			"hr", List.of(
 				PermissionType.TIMESHEET_VIEW,
 				PermissionType.TIMESHEET_CREATE,
 				PermissionType.TIMESHEET_APPROVAL,
 				PermissionType.USER_VIEW,
 				PermissionType.USER_CREATE,
 				PermissionType.USER_DELETE,
-				PermissionType.USER_UPDATE)),
-			"user", new ArrayList<>(List.of(
+				PermissionType.USER_UPDATE),
+			"user", List.of(
 				PermissionType.TIMESHEET_VIEW,
 				PermissionType.TIMESHEET_CREATE,
 				PermissionType.USER_VIEW,
-				PermissionType.USER_UPDATE)),
-			"leader", new ArrayList<>(List.of(
+				PermissionType.USER_UPDATE),
+			"leader", List.of(
 				PermissionType.TIMESHEET_VIEW,
 				PermissionType.TIMESHEET_CREATE,
 				PermissionType.TIMESHEET_APPROVAL,
 				PermissionType.USER_VIEW,
-				PermissionType.USER_UPDATE)));
+				PermissionType.USER_UPDATE));
 
 		rolePermissions.forEach((roleName, permissions) -> {
 
 			Role role = roleMap.get(roleName);
-
-			role.setPermissions(new ArrayList<>(permissions.stream()
+			role.setPermissions(permissions.stream()
 				.map(permissionType -> permissionMap.get(permissionType.name()))
-				.toList()));
+				.collect(Collectors.toSet()));
 			roleRepository.save(role);
 
 		});
 
 	}
 
-	private void seedTestUsers(Map<String, Role> roleMap) {
+	private Map<String, Team> seedTeams() {
+
+		List<Team> teams = List.of(
+			new Team().setName("STNET"),
+			new Team().setName("MSR"),
+			new Team().setName("VMO"));
+
+		Map<String, Team> teamMap = teams.stream()
+			.collect(Collectors.toMap(
+				Team::getName,
+				team -> teamRepository
+					.findByName(team.getName())
+					.orElseGet(() -> teamRepository.save(team))));
+
+		return teamMap;
+
+	}
+
+	private void seedTestUsers(Map<String, Role> roleMap, Map<String, Team> teamMap) {
 
 		final String DEFAULT_PASSWORD = passwordEncoder.encode("password"); // NOSONAR
 
-		List<User> users = new ArrayList<>(List.of(
+		List<User> users = List.of(
 			new User()
 				.setName("hung")
 				.setUsername("hung@test.com")
 				.setEmail("hung@test.com")
 				.setPassword(DEFAULT_PASSWORD)
 				.setPosition(UserPosition.DEVELOPER)
-				.setRoles(new ArrayList<>(List.of(roleMap.get("user")))),
+				.setTeam(teamMap.get("STNET"))
+				.setRoles(Set.of(roleMap.get("user"))),
 
 			new User()
 				.setName("tung")
@@ -158,7 +181,8 @@ public class DataInitializerController {
 				.setEmail("tung@test.com")
 				.setPassword(DEFAULT_PASSWORD)
 				.setPosition(UserPosition.DEVELOPER)
-				.setRoles(new ArrayList<>(List.of(roleMap.get("user")))),
+				.setTeam(teamMap.get("MSR"))
+				.setRoles(Set.of(roleMap.get("user"))),
 
 			new User()
 				.setName("manh")
@@ -166,7 +190,8 @@ public class DataInitializerController {
 				.setEmail("manh@test.com")
 				.setPassword(DEFAULT_PASSWORD)
 				.setPosition(UserPosition.TEACH_LEADER)
-				.setRoles(new ArrayList<>(List.of(roleMap.get("leader")))),
+				.setTeam(teamMap.get("STNET"))
+				.setRoles(Set.of(roleMap.get("leader"))),
 
 			new User()
 				.setName("phuc")
@@ -174,7 +199,7 @@ public class DataInitializerController {
 				.setEmail("phuc@test.com")
 				.setPassword(DEFAULT_PASSWORD)
 				.setPosition(UserPosition.TEACH_LEADER)
-				.setRoles(new ArrayList<>(List.of(roleMap.get("leader")))),
+				.setRoles(Set.of(roleMap.get("leader"))),
 
 			new User()
 				.setName("ha")
@@ -182,7 +207,8 @@ public class DataInitializerController {
 				.setEmail("ha@test.com")
 				.setPassword(DEFAULT_PASSWORD)
 				.setPosition(UserPosition.HR_MANAGER)
-				.setRoles(new ArrayList<>(List.of(roleMap.get("hr"))))));
+				.setTeam(teamMap.get("VMO"))
+				.setRoles(Set.of(roleMap.get("hr"))));
 
 		users.forEach(user -> userRepository.findByUsername(user.getUsername())
 			.orElseGet(() -> userRepository.save(user)));

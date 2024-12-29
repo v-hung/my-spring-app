@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.demo.authorization.HasPermission;
+import com.example.demo.dto.PageResponse;
 import com.example.demo.dto.UserDto;
 import com.example.demo.models.PermissionType;
 import com.example.demo.models.User;
@@ -33,13 +34,13 @@ public class UserController {
 	private final ModelMapper modelMapper;
 
 	@GetMapping()
-	public ResponseEntity<Page<UserDto>> getUsers(@PageableDefault(size = 20) Pageable pageable) {
+	public ResponseEntity<PageResponse<UserDto>> getUsers(@PageableDefault(size = 20) Pageable pageable) {
 
 		Page<User> page = userService.getAll(pageable);
 
-		Page<UserDto> users = page.map(user -> modelMapper.map(user, UserDto.class));
+		Page<UserDto> pageDto = page.map(user -> modelMapper.map(user, UserDto.class));
 
-		return ResponseEntity.ok(users);
+		return ResponseEntity.ok(new PageResponse<UserDto>(pageDto));
 
 	}
 

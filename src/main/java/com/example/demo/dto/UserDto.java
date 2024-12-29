@@ -3,7 +3,11 @@ package com.example.demo.dto;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.example.demo.models.Team;
 import com.example.demo.models.UserPosition;
+import com.example.demo.models.UserStatus;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.validation.constraints.NotNull;
@@ -29,7 +33,14 @@ public class UserDto {
 	@Enumerated(EnumType.STRING)
 	private UserPosition position;
 
+	@JsonIgnoreProperties({ "supervisor", "roles", "refreshTokens", "workTime", "team" })
 	private UserDto supervisor;
+
+	private Team team;
+
+	@NotNull
+	@Enumerated(EnumType.STRING)
+	private UserStatus status = UserStatus.ACTIVE;
 
 	@NotNull
 	private List<RoleDto> roles = new ArrayList<>();

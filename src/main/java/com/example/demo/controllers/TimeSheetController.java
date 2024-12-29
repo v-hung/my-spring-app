@@ -31,7 +31,7 @@ public class TimesheetController {
 
 	private final AuthenticationService authenticationService;
 
-	private final ModelMapper mapper;
+	private final ModelMapper modelMapper;
 
 	@PreAuthorize("isAuthenticated()")
 	@PostMapping("/checkin")
@@ -41,7 +41,7 @@ public class TimesheetController {
 
 		Timesheet timesheet = timesheetService.performCheckIn(user);
 
-		return ResponseEntity.ok(mapper.map(timesheet, TimesheetDto.class));
+		return ResponseEntity.ok(modelMapper.map(timesheet, TimesheetDto.class));
 
 	}
 
@@ -53,7 +53,7 @@ public class TimesheetController {
 
 		Timesheet timesheet = timesheetService.performCheckOut(user);
 
-		return ResponseEntity.ok(mapper.map(timesheet, TimesheetDto.class));
+		return ResponseEntity.ok(modelMapper.map(timesheet, TimesheetDto.class));
 
 	}
 
@@ -67,7 +67,7 @@ public class TimesheetController {
 
 		if (todayTimesheet != null) {
 
-			return ResponseEntity.ok(mapper.map(todayTimesheet, TimesheetDto.class));
+			return ResponseEntity.ok(modelMapper.map(todayTimesheet, TimesheetDto.class));
 
 		}
 
@@ -89,7 +89,7 @@ public class TimesheetController {
 		List<Timesheet> monthlyTimesheets = timesheetService.getMonthlyTimesheets(user, month);
 
 		List<TimesheetDto> timesheetDtos = monthlyTimesheets.stream()
-			.map(timesheet -> mapper.map(timesheet, TimesheetDto.class))
+			.map(timesheet -> modelMapper.map(timesheet, TimesheetDto.class))
 			.toList();
 
 		return ResponseEntity.ok(timesheetDtos);

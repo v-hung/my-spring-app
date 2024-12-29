@@ -7,13 +7,11 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import com.fasterxml.jackson.annotation.JsonIdentityReference;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
@@ -27,6 +25,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
@@ -57,13 +56,12 @@ public class User implements UserDetails {
 	private UserPosition position;
 
 	@ManyToOne
-	@JsonIdentityReference(alwaysAsId = true)
+	@JsonIgnoreProperties({ "supervisor", "roles", "refreshTokens", "workTime", "team" })
 	private User supervisor;
 
 	@ManyToMany
 	@Column(nullable = false)
-	@Fetch(FetchMode.JOIN)
-	private List<Role> roles = new ArrayList<>();
+	private Set<Role> roles = new HashSet<>();
 
 	@OneToMany
 	@JsonIgnore
@@ -72,9 +70,13 @@ public class User implements UserDetails {
 	@ManyToOne
 	private WorkTime workTime;
 
-	@ManyToMany
-	@JsonIgnoreProperties("teams")
-	private List<Team> teams = new ArrayList<>();
+	@ManyToOne
+	@JsonBackReference
+	private Team team;
+
+	@NotNull
+	@Enumerated(EnumType.STRING)
+	private UserStatus status = UserStatus.ACTIVE;
 
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {

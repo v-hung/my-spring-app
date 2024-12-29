@@ -1,11 +1,8 @@
 package com.example.demo.models;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
-
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
+import java.util.HashSet;
+import java.util.Set;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -40,7 +37,6 @@ public class Role implements Serializable {
 	private int level = 1;
 
 	@ManyToMany
-	@Fetch(FetchMode.JOIN)
-	private List<Permission> permissions = new ArrayList<>();
+	private Set<Permission> permissions = new HashSet<>();
 
 }

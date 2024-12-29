@@ -5,7 +5,7 @@ import org.modelmapper.config.Configuration.AccessLevel;
 import org.modelmapper.convention.NameTokenizers;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.data.web.config.EnableSpringDataWebSupport;
+import org.springframework.context.annotation.Primary;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -15,6 +15,12 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import com.example.demo.repositories.UserRepository;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.hibernate6.Hibernate6Module;
+import com.fasterxml.jackson.datatype.hibernate6.Hibernate6Module.Feature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
 import jakarta.persistence.EntityManager;
@@ -22,7 +28,6 @@ import lombok.RequiredArgsConstructor;
 
 @Configuration
 @RequiredArgsConstructor
-@EnableSpringDataWebSupport(pageSerializationMode = EnableSpringDataWebSupport.PageSerializationMode.VIA_DTO)
 public class ApplicationConfig {
 
 	private final UserRepository userRepository;
@@ -35,6 +40,14 @@ public class ApplicationConfig {
 		ModelMapper modelMapper = new ModelMapper();
 
 		modelMapper.getConfiguration()
+			.setSkipNullEnabled(true)
+			// .setPropertyCondition(new Condition<Object, Object>() {
+			// 	public boolean applies(MappingContext<Object, Object> context) {
+
+			// 		return !(context.getSource() instanceof PersistentCollection);
+
+			// 	}
+			// })
 			.setFieldMatchingEnabled(true)
 			.setFieldAccessLevel(AccessLevel.PRIVATE)
 			.setSourceNameTokenizer(NameTokenizers.UNDERSCORE)
@@ -45,14 +58,33 @@ public class ApplicationConfig {
 	}
 
 	@Bean
-	public JPAQueryFactory jpaQueryFactory() {
+	@Primary
+	ObjectMapper objectMapper() {
+
+		Hibernate6Module hibernate6Module = new Hibernate6Module();
+		hibernate6Module.configure(Feature.FORCE_LAZY_LOADING, false);
+		// Enable below line to switch lazy loaded json from null to a blank object!
+		hibernate6Module.configure(Feature.SERIALIZE_IDENTIFIER_FOR_LAZY_NOT_LOADED_OBJECTS, true);
+
+		ObjectMapper objectMapper = new ObjectMapper();
+		objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+		objectMapper.registerModule(hibernate6Module);
+		objectMapper.registerModule(new JavaTimeModule());
+		objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+
+		return objectMapper;
+
+	}
+
+	@Bean
+	JPAQueryFactory jpaQueryFactory() {
 
 		return new JPAQueryFactory(entityManager);
 
 	}
 
 	@Bean
-	public AuthenticationManager authenticationManager(UserDetailsService userDetailsService,
+	AuthenticationManager authenticationManager(UserDetailsService userDetailsService,
 		PasswordEncoder passwordEncoder) {
 
 		DaoAuthenticationProvider authenticationProvider = new DaoAuthenticationProvider();
@@ -64,7 +96,7 @@ public class ApplicationConfig {
 	}
 
 	@Bean
-	public UserDetailsService userDetailsService() {
+	UserDetailsService userDetailsService() {
 
 		return username -> userRepository.findByUsernameWithRolesAndPermissions(username)
 			.orElseThrow(() -> new UsernameNotFoundException("User not found"));
@@ -72,7 +104,7 @@ public class ApplicationConfig {
 	}
 
 	@Bean
-	public PasswordEncoder passwordEncoder() {
+	PasswordEncoder passwordEncoder() {
 
 		return new BCryptPasswordEncoder();
 
