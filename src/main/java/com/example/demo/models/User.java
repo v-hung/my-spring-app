@@ -1,6 +1,7 @@
 package com.example.demo.models;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashSet;
@@ -15,6 +16,7 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -22,9 +24,11 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
@@ -74,6 +78,14 @@ public class User implements UserDetails {
 	@JsonBackReference
 	private Team team;
 
+	@OneToOne(cascade = CascadeType.ALL)
+	@JoinColumn(name = "profile_id", referencedColumnName = "id")
+	@JsonBackReference
+	private Profile profile;
+
+	@NotNull
+	private boolean isFirstLogin = true;
+
 	@NotNull
 	@Enumerated(EnumType.STRING)
 	private UserStatus status = UserStatus.ACTIVE;
@@ -114,7 +126,12 @@ public class User implements UserDetails {
 	@Override
 	public boolean isEnabled() {
 
-		return true;
+		UserStatus[] statusInActive = {
+			UserStatus.INACTIVE,
+			UserStatus.OFF_BOARDING
+		};
+
+		return Arrays.asList(statusInActive).contains(status);
 
 	}
 }

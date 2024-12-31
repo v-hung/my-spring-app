@@ -2,18 +2,27 @@ package com.example.demo.services;
 
 import java.util.List;
 
+import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.example.demo.exception.BusinessException;
 import com.example.demo.models.User;
+import com.example.demo.models.Profile;
 import com.example.demo.models.QRole;
 import com.example.demo.models.QUser;
+import com.example.demo.models.Role;
+import com.example.demo.repositories.RoleRepository;
+import com.example.demo.repositories.TeamRepository;
 import com.example.demo.repositories.UserRepository;
+import com.example.demo.repositories.WorkTimeRepository;
+import com.example.demo.requests.UserCreateUpdateRequest;
+import com.example.demo.utils.ObjectUtils;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
 import lombok.AllArgsConstructor;
@@ -24,9 +33,20 @@ public class UserService {
 
 	private final UserRepository userRepository;
 
+	private final PasswordEncoder passwordEncoder;
+
+	private final TeamRepository teamRepository;
+
+	private final WorkTimeRepository workTimeRepository;
+
+	private final RoleRepository roleRepository;
+
 	private final JPAQueryFactory factory;
 
-	public Page<User> getAll(Pageable pageable) {
+	private final ModelMapper modelMapper;
+
+	@Transactional(readOnly = true)
+	public <D> Page<D> getAll(Pageable pageable, Class<D> dtoClass) {
 
 		QUser user = QUser.user;
 		QRole role = QRole.role;
@@ -35,53 +55,113 @@ public class UserService {
 		List<User> users = factory.selectFrom(user)
 			.leftJoin(user.roles, role).fetchJoin()
 			.where(role.admin.eq(false))
-			.offset((pageable.getPageNumber() - 1) * pageable.getPageSize())
+			.offset((pageable.getPageNumber() - 1L) * pageable.getPageSize())
 			.limit(pageable.getPageSize())
 			.fetch();
 
-		// Fetch total count - thêm join vào query count
-		long total = factory.select(user.countDistinct()) // dùng countDistinct thay vì count
+		// Fetch total count
+		long total = factory.select(user.countDistinct())
 			.from(user)
-			.leftJoin(user.roles, role) // thêm join
+			.leftJoin(user.roles, role)
 			.where(role.admin.eq(false))
 			.fetchOne();
 
-		return new PageImpl<>(users, pageable, total);
+		List<D> userDto = users.stream().map(u -> modelMapper.map(u, dtoClass)).toList();
+
+		return new PageImpl<>(userDto, pageable, total);
 
 	}
 
 	@Transactional(readOnly = true)
-	public User getById(long id) {
-
-		return userRepository.findById(id)
-			.orElseThrow(() -> new BusinessException(HttpStatus.NOT_FOUND, "User does not exits"));
-
-	}
-
-	public User createUser(User data) {
-
-		User user = data;
-
-		userRepository.save(data);
-
-		return user;
-
-	}
-
-	public User updateUser(long id, User data) {
+	public <D> D getById(long id, Class<D> dtoClass) {
 
 		User user = userRepository.findById(id)
 			.orElseThrow(() -> new BusinessException(HttpStatus.NOT_FOUND, "User does not exits"));
 
-		userRepository.save(data);
+		return modelMapper.map(user, dtoClass);
 
-		return user;
+	}
+
+	@Transactional
+	public <D> D createUser(UserCreateUpdateRequest data, Class<D> dtoClass) {
+
+		User user = new User();
+
+		setUserInformation(user, data);
+
+		userRepository.save(user);
+
+		return modelMapper.map(user, dtoClass);
+
+	}
+
+	@Transactional
+	public <D> D updateUser(long id, UserCreateUpdateRequest data, Class<D> dtoClass) {
+
+		User user = userRepository.findById(id)
+			.orElseThrow(() -> new BusinessException(HttpStatus.NOT_FOUND, "User does not exits"));
+
+		setUserInformation(user, data);
+
+		userRepository.save(user);
+
+		return modelMapper.map(user, dtoClass);
 
 	}
 
 	public void deleteUserById(long id) {
 
 		userRepository.deleteById(id);
+
+	}
+
+	private void setUserInformation(User user, UserCreateUpdateRequest data) {
+
+		user.setName(data.getName())
+			.setUsername(data.getUsername())
+			.setEmail(data.getEmail())
+			.setPosition(data.getPosition());
+
+		if (data.getPassword() != null) {
+
+			user.setPassword(passwordEncoder.encode(data.getPassword()));
+
+		}
+
+		if (data.getSupervisorId() != null) {
+
+			user.setSupervisor(userRepository.findById(data.getSupervisorId()).orElse(null));
+
+		}
+
+		if (data.getTeamId() != null) {
+
+			teamRepository.findById(data.getTeamId()).ifPresent(user::setTeam);
+
+		}
+
+		if (data.getWorkTimeId() != null) {
+
+			workTimeRepository.findById(data.getWorkTimeId()).ifPresent(user::setWorkTime);
+
+		}
+
+		if (!data.getRoleIds().isEmpty()) {
+
+			List<Role> roles = roleRepository.findAllById(data.getRoleIds());
+
+			user.getRoles().clear();
+			user.getRoles().addAll(roles);
+
+		}
+
+		if (ObjectUtils.hasNonNullProperties(data.getProfile())) {
+
+			Profile profile = modelMapper.map(data.getProfile(), Profile.class);
+
+			user.setProfile(profile);
+
+		}
 
 	}
 

@@ -3,7 +3,6 @@ package com.example.demo.dto;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.example.demo.models.Team;
 import com.example.demo.models.UserPosition;
 import com.example.demo.models.UserStatus;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -36,7 +35,7 @@ public class UserDto {
 	@JsonIgnoreProperties({ "supervisor", "roles", "refreshTokens", "workTime", "team" })
 	private UserDto supervisor;
 
-	private Team team;
+	private TeamDto team;
 
 	@NotNull
 	@Enumerated(EnumType.STRING)
@@ -44,5 +43,8 @@ public class UserDto {
 
 	@NotNull
 	private List<RoleDto> roles = new ArrayList<>();
+
+	@NotNull
+	private boolean isFirstLogin = true;
 
 }

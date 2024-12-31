@@ -1,6 +1,5 @@
 package com.example.demo.controllers;
 
-import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
@@ -16,10 +15,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.demo.authorization.HasPermission;
-import com.example.demo.dto.PageResponse;
 import com.example.demo.dto.UserDto;
+import com.example.demo.dto.UserFullDto;
 import com.example.demo.models.PermissionType;
-import com.example.demo.models.User;
+import com.example.demo.requests.UserCreateUpdateRequest;
+import com.example.demo.responses.PageResponse;
 import com.example.demo.services.UserService;
 
 import lombok.RequiredArgsConstructor;
@@ -31,46 +31,51 @@ public class UserController {
 
 	private final UserService userService;
 
-	private final ModelMapper modelMapper;
-
 	@GetMapping()
 	public ResponseEntity<PageResponse<UserDto>> getUsers(@PageableDefault(size = 20) Pageable pageable) {
 
-		Page<User> page = userService.getAll(pageable);
+		Page<UserDto> page = userService.getAll(pageable, UserDto.class);
 
-		Page<UserDto> pageDto = page.map(user -> modelMapper.map(user, UserDto.class));
-
-		return ResponseEntity.ok(new PageResponse<UserDto>(pageDto));
+		return ResponseEntity.ok(new PageResponse<UserDto>(page));
 
 	}
 
 	@GetMapping("/{id}")
 	public ResponseEntity<UserDto> getUser(@PathVariable long id) {
 
-		User user = userService.getById(id);
+		UserDto user = userService.getById(id, UserDto.class);
 
-		return ResponseEntity.ok(modelMapper.map(user, UserDto.class));
+		return ResponseEntity.ok(user);
+
+	}
+
+	@GetMapping("/{id}/details")
+	public ResponseEntity<UserFullDto> getUserDetails(@PathVariable long id) {
+
+		UserFullDto user = userService.getById(id, UserFullDto.class);
+
+		return ResponseEntity.ok(user);
 
 	}
 
 	@PostMapping()
 	@HasPermission(PermissionType.USER_CREATE)
-	public ResponseEntity<UserDto> createUser(@RequestBody User model) {
+	public ResponseEntity<UserDto> createUser(@RequestBody UserCreateUpdateRequest model) {
 
-		User user = userService.createUser(model);
+		UserDto user = userService.createUser(model, UserDto.class);
 
-		return ResponseEntity.ok(modelMapper.map(user, UserDto.class));
+		return ResponseEntity.ok(user);
 
 	}
 
 	@PutMapping("/{id}/edit")
 	@PatchMapping("/{id}/edit")
 	@HasPermission(PermissionType.USER_UPDATE)
-	public ResponseEntity<UserDto> updateUser(@PathVariable long id, @RequestBody User model) {
+	public ResponseEntity<UserDto> updateUser(@PathVariable long id, @RequestBody UserCreateUpdateRequest model) {
 
-		User user = userService.updateUser(id, model);
+		UserDto user = userService.updateUser(id, model, UserDto.class);
 
-		return ResponseEntity.ok(modelMapper.map(user, UserDto.class));
+		return ResponseEntity.ok(user);
 
 	}
 

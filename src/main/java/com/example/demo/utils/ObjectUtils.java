@@ -14,6 +14,45 @@ public class ObjectUtils {
 
 	}
 
+	public static <T> boolean hasNonNullProperties(T object) {
+
+		if (object == null) {
+
+			return false;
+
+		}
+
+		try {
+
+			var fields = object.getClass().getDeclaredFields();
+
+			for (var field : fields) {
+
+				String fieldName = field.getName();
+				String getterName = "get" + capitalize(fieldName);
+
+				Method getter = object.getClass().getMethod(getterName);
+
+				Object value = getter.invoke(object);
+
+				if (value != null) {
+
+					return true;
+
+				}
+
+			}
+
+		} catch (Exception e) {
+
+			throw new BusinessException(HttpStatus.BAD_REQUEST, "Error while checking properties");
+
+		}
+
+		return false;
+
+	}
+
 	public static <T> void copyNonNullProperties(T source, T target) {
 
 		if (source == null || target == null) {
@@ -36,16 +75,7 @@ public class ObjectUtils {
 				Method getter = source.getClass().getMethod(getterName);
 				Method setter = null;
 
-				try {
-
-					setter = target.getClass().getMethod(setterName, field.getType());
-
-				} catch (NoSuchMethodException e) {
-
-					// Nếu không có setter, bỏ qua
-					continue;
-
-				}
+				setter = getSetterMethod(target, setterName, field.getType());
 
 				Object value = getter.invoke(source); // Gọi getter
 
@@ -90,6 +120,20 @@ public class ObjectUtils {
 	private static String capitalize(String str) {
 
 		return str.substring(0, 1).toUpperCase() + str.substring(1);
+
+	}
+
+	private static Method getSetterMethod(Object target, String setterName, Class<?> fieldType) {
+
+		try {
+
+			return target.getClass().getMethod(setterName, fieldType);
+
+		} catch (NoSuchMethodException e) {
+
+			return null;
+
+		}
 
 	}
 }
