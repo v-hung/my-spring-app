@@ -47,9 +47,6 @@ public class User implements UserDetails {
 	private String name;
 
 	@Column(nullable = false, unique = true)
-	private String username;
-
-	@Column(nullable = false, unique = true)
 	private String email;
 
 	@Column(nullable = false)
@@ -85,6 +82,9 @@ public class User implements UserDetails {
 
 	@NotNull
 	private boolean isFirstLogin = true;
+
+	@NotNull
+	private int leaveHours = 0;
 
 	@NotNull
 	@Enumerated(EnumType.STRING)
@@ -132,6 +132,13 @@ public class User implements UserDetails {
 		};
 
 		return Arrays.asList(statusInActive).contains(status);
+
+	}
+
+	@Override
+	public String getUsername() {
+
+		return email;
 
 	}
 }

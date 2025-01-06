@@ -24,9 +24,6 @@ public class UserDto {
 	private String name;
 
 	@NotNull
-	private String username;
-
-	@NotNull
 	private String email;
 
 	@Enumerated(EnumType.STRING)
@@ -46,5 +43,8 @@ public class UserDto {
 
 	@NotNull
 	private boolean isFirstLogin = true;
+
+	@NotNull
+	private int leaveHours = 0;
 
 }

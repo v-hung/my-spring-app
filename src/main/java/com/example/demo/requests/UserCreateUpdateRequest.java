@@ -18,8 +18,6 @@ public class UserCreateUpdateRequest {
 
 	private String name;
 
-	private String username;
-
 	private String email;
 
 	private String password;

@@ -55,7 +55,7 @@ public class AuthenticationService {
 
 		UserDetails userDetails = (UserDetails)authentication.getPrincipal();
 
-		User user = userRepository.findByUsername(userDetails.getUsername())
+		User user = userRepository.findByEmail(userDetails.getUsername())
 			.orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
 		String token = jwtService.generateToken(authentication.getName());

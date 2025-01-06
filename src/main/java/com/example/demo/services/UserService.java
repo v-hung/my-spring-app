@@ -118,7 +118,6 @@ public class UserService {
 	private void setUserInformation(User user, UserCreateUpdateRequest data) {
 
 		user.setName(data.getName())
-			.setUsername(data.getUsername())
 			.setEmail(data.getEmail())
 			.setPosition(data.getPosition());
 

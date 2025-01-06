@@ -98,7 +98,7 @@ public class ApplicationConfig {
 	@Bean
 	UserDetailsService userDetailsService() {
 
-		return username -> userRepository.findByUsernameWithRolesAndPermissions(username)
+		return username -> userRepository.findByEmailWithRolesAndPermissions(username)
 			.orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
 	}

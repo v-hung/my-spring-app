@@ -62,10 +62,9 @@ public class DataInitializerController {
 		Role userRole = roleRepository.findByName("admin")
 			.orElseGet(() -> roleRepository.save(new Role().setName("admin").setAdmin(true)));
 
-		if (!userRepository.findByUsername(DEFAULT_USERNAME).isPresent()) {
+		if (!userRepository.findByEmail(DEFAULT_USERNAME).isPresent()) {
 
 			User admin = new User()
-				.setUsername(DEFAULT_USERNAME)
 				.setName("Admin")
 				.setEmail(DEFAULT_USERNAME)
 				.setPassword(passwordEncoder.encode(DEFAULT_PASSWORD)) // NOSONAR
@@ -146,18 +145,16 @@ public class DataInitializerController {
 	private Map<String, Team> seedTeams() {
 
 		List<Team> teams = List.of(
-			new Team().setName("STNET"),
+			new Team().setName("STNET"), // NOSONAR
 			new Team().setName("MSR"),
 			new Team().setName("VMO"));
 
-		Map<String, Team> teamMap = teams.stream()
+		return teams.stream()
 			.collect(Collectors.toMap(
 				Team::getName,
 				team -> teamRepository
 					.findByName(team.getName())
 					.orElseGet(() -> teamRepository.save(team))));
-
-		return teamMap;
 
 	}
 
@@ -168,7 +165,6 @@ public class DataInitializerController {
 		List<User> users = List.of(
 			new User()
 				.setName("hung")
-				.setUsername("hung@test.com")
 				.setEmail("hung@test.com")
 				.setPassword(DEFAULT_PASSWORD)
 				.setPosition(UserPosition.DEVELOPER)
@@ -177,7 +173,6 @@ public class DataInitializerController {
 
 			new User()
 				.setName("tung")
-				.setUsername("tung@test.com")
 				.setEmail("tung@test.com")
 				.setPassword(DEFAULT_PASSWORD)
 				.setPosition(UserPosition.DEVELOPER)
@@ -186,7 +181,6 @@ public class DataInitializerController {
 
 			new User()
 				.setName("manh")
-				.setUsername("manh@test.com")
 				.setEmail("manh@test.com")
 				.setPassword(DEFAULT_PASSWORD)
 				.setPosition(UserPosition.TEACH_LEADER)
@@ -195,7 +189,6 @@ public class DataInitializerController {
 
 			new User()
 				.setName("phuc")
-				.setUsername("phuc@test.com")
 				.setEmail("phuc@test.com")
 				.setPassword(DEFAULT_PASSWORD)
 				.setPosition(UserPosition.TEACH_LEADER)
@@ -203,14 +196,13 @@ public class DataInitializerController {
 
 			new User()
 				.setName("ha")
-				.setUsername("ha@test.com")
 				.setEmail("ha@test.com")
 				.setPassword(DEFAULT_PASSWORD)
 				.setPosition(UserPosition.HR_MANAGER)
 				.setTeam(teamMap.get("VMO"))
 				.setRoles(Set.of(roleMap.get("hr"))));
 
-		users.forEach(user -> userRepository.findByUsername(user.getUsername())
+		users.forEach(user -> userRepository.findByEmail(user.getUsername())
 			.orElseGet(() -> userRepository.save(user)));
 
 	}
