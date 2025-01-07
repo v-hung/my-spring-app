@@ -7,6 +7,7 @@ import com.example.demo.dto.ProfileDto;
 import com.example.demo.models.UserPosition;
 import com.example.demo.models.UserStatus;
 
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
@@ -16,8 +17,10 @@ import lombok.experimental.Accessors;
 @Accessors(chain = true)
 public class UserCreateUpdateRequest {
 
+	@NotNull
 	private String name;
 
+	@NotNull
 	private String email;
 
 	private String password;

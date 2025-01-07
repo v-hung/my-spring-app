@@ -56,17 +56,17 @@ public class ApiExceptionHandler {
 
 	}
 
-	// @ExceptionHandler(Exception.class)
-	// public ResponseEntity<ErrorResponse> handleGenericException(Exception ex, HttpServletRequest request) {
+	@ExceptionHandler(Exception.class)
+	public ResponseEntity<ErrorResponse> handleGenericException(Exception ex, HttpServletRequest request) {
 
-	// 	ErrorResponse errorResponse = new ErrorResponse()
-	// 		.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value())
-	// 		.setMessage(ex.getMessage())
-	// 		.setPath(request.getRequestURI())
-	// 		.setError(HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase());
+		ErrorResponse errorResponse = new ErrorResponse()
+			.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value())
+			.setMessage(ex.getMessage())
+			.setPath(request.getRequestURI())
+			.setError(HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase());
 
-	// 	return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
+		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
 
-	// }
+	}
 
 }

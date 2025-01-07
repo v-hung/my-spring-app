@@ -44,7 +44,7 @@ public class AuthenticationService {
 
 	private final RefreshTokenRepository refreshTokenRepository;
 
-	private final ModelMapper mapper;
+	private final ModelMapper modelMapper;
 
 	public LoginResponse login(HttpServletResponse servletResponse, LoginRequest model) {
 
@@ -69,7 +69,7 @@ public class AuthenticationService {
 		deleteExpiredTokens();
 
 		return new LoginResponse()
-			.setUser(mapper.map(user, UserDto.class))
+			.setUser(modelMapper.map(user, UserDto.class))
 			.setToken(token)
 			.setRefreshToken(refreshToken);
 
@@ -131,6 +131,31 @@ public class AuthenticationService {
 			if (principal instanceof UserDetails) {
 
 				return (User)principal;
+
+			} else {
+
+				return null;
+
+			}
+
+		}
+
+		return null;
+
+	}
+
+	@Transactional(readOnly = true)
+	public <D> D getCurrentUser(Class<D> dtoClass) {
+
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+		if (authentication != null && authentication.isAuthenticated()) {
+
+			Object principal = authentication.getPrincipal();
+
+			if (principal instanceof UserDetails) {
+
+				return modelMapper.map(principal, dtoClass);
 
 			} else {
 
