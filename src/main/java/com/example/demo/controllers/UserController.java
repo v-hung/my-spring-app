@@ -19,6 +19,7 @@ import com.example.demo.dto.UserDto;
 import com.example.demo.dto.UserFullDto;
 import com.example.demo.models.PermissionType;
 import com.example.demo.requests.UserCreateUpdateRequest;
+import com.example.demo.requests.UserSearchResponse;
 import com.example.demo.responses.PageResponse;
 import com.example.demo.services.UserService;
 
@@ -32,9 +33,10 @@ public class UserController {
 	private final UserService userService;
 
 	@GetMapping()
-	public ResponseEntity<PageResponse<UserDto>> getUsers(@PageableDefault(size = 20) Pageable pageable) {
+	public ResponseEntity<PageResponse<UserDto>> getUsers(@PageableDefault(size = 20) Pageable pageable,
+		UserSearchResponse model) {
 
-		Page<UserDto> page = userService.getAll(pageable, UserDto.class);
+		Page<UserDto> page = userService.getAll(pageable, model, UserDto.class);
 
 		return ResponseEntity.ok(new PageResponse<UserDto>(page));
 

@@ -8,14 +8,17 @@ import com.example.demo.models.Role;
 import com.example.demo.models.Team;
 import com.example.demo.models.User;
 import com.example.demo.models.UserPosition;
+import com.example.demo.models.WorkTime;
 import com.example.demo.repositories.PermissionRepository;
 import com.example.demo.repositories.RoleRepository;
 import com.example.demo.repositories.TeamRepository;
 import com.example.demo.repositories.UserRepository;
+import com.example.demo.repositories.WorkTimeRepository;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import java.time.LocalTime;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -36,6 +39,7 @@ public class DataInitializerController {
 	private final PasswordEncoder passwordEncoder;
 	private final PermissionRepository permissionRepository;
 	private final TeamRepository teamRepository;
+	private final WorkTimeRepository workTimeRepository;
 
 	@GetMapping("/initialize-data")
 	public String initializeData() {
@@ -46,6 +50,7 @@ public class DataInitializerController {
 		seedAdminUser();
 		Map<String, Role> roleMap = seedRolesAndPermissions();
 		Map<String, Team> teamMap = seedTeams();
+		seedWorkTimes();
 
 		seedTestUsers(roleMap, teamMap);
 
@@ -155,6 +160,23 @@ public class DataInitializerController {
 				team -> teamRepository
 					.findByName(team.getName())
 					.orElseGet(() -> teamRepository.save(team))));
+
+	}
+
+	private Map<String, WorkTime> seedWorkTimes() {
+
+		List<WorkTime> workTimes = List.of(
+			new WorkTime().setTitle("Cơ bản"),
+			new WorkTime().setTitle("Làm việc sớm")
+				.setStartTimeAfternoon(LocalTime.parse("13:00:00"))
+				.setEndTimeAfternoon(LocalTime.parse("17:00:00")));
+
+		return workTimes.stream()
+			.collect(Collectors.toMap(
+				WorkTime::getTitle,
+				workTime -> workTimeRepository
+					.findByTitle(workTime.getTitle())
+					.orElseGet(() -> workTimeRepository.save(workTime))));
 
 	}
 

@@ -127,7 +127,8 @@ public class User implements UserDetails {
 	public boolean isEnabled() {
 
 		UserStatus[] statusInActive = {
-			UserStatus.INACTIVE
+			UserStatus.INACTIVE,
+			UserStatus.OFFSITE
 		};
 
 		return !Arrays.asList(statusInActive).contains(status);

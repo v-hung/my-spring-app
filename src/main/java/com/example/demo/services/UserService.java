@@ -2,6 +2,7 @@ package com.example.demo.services;
 
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -22,7 +23,9 @@ import com.example.demo.repositories.TeamRepository;
 import com.example.demo.repositories.UserRepository;
 import com.example.demo.repositories.WorkTimeRepository;
 import com.example.demo.requests.UserCreateUpdateRequest;
+import com.example.demo.requests.UserSearchResponse;
 import com.example.demo.utils.ObjectUtils;
+import com.querydsl.core.BooleanBuilder;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
 import lombok.AllArgsConstructor;
@@ -46,16 +49,31 @@ public class UserService {
 	private final ModelMapper modelMapper;
 
 	@Transactional(readOnly = true)
-	public <D> Page<D> getAll(Pageable pageable, Class<D> dtoClass) {
+	public <D> Page<D> getAll(Pageable pageable, UserSearchResponse search, Class<D> dtoClass) {
+
+		int pageNumber = Math.max(pageable.getPageNumber(), 1);
 
 		QUser user = QUser.user;
 		QRole role = QRole.role;
 
+		// Fetch data with pagination and search by name if provided
+		BooleanBuilder predicate = new BooleanBuilder();
+
+		if (search != null) {
+
+			if (StringUtils.isNotBlank(search.getName())) {
+
+				predicate.and(user.name.containsIgnoreCase(search.getName()));
+
+			}
+
+		}
+
 		// Fetch data with pagination
 		List<User> users = factory.selectFrom(user)
 			.leftJoin(user.roles, role).fetchJoin()
-			.where(role.admin.eq(false))
-			.offset((pageable.getPageNumber() - 1L) * pageable.getPageSize())
+			.where(role.admin.eq(false).and(predicate))
+			.offset((pageNumber - 1L) * pageable.getPageSize())
 			.limit(pageable.getPageSize())
 			.fetch();
 
@@ -63,7 +81,7 @@ public class UserService {
 		long total = factory.select(user.countDistinct())
 			.from(user)
 			.leftJoin(user.roles, role)
-			.where(role.admin.eq(false))
+			.where(role.admin.eq(false).and(predicate))
 			.fetchOne();
 
 		List<D> userDto = users.stream().map(u -> modelMapper.map(u, dtoClass)).toList();

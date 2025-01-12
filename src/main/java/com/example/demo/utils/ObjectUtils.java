@@ -29,7 +29,19 @@ public class ObjectUtils {
 			for (var field : fields) {
 
 				String fieldName = field.getName();
-				String getterName = "get" + capitalize(fieldName);
+
+				// Determine the getter method name based on field type
+				String getterName;
+
+				if (field.getType() == boolean.class || field.getType() == Boolean.class) {
+
+					getterName = "is" + capitalize(fieldName); // for boolean values, use "is" prefix
+
+				} else {
+
+					getterName = "get" + capitalize(fieldName); // standard getter for other types
+
+				}
 
 				Method getter = object.getClass().getMethod(getterName);
 
