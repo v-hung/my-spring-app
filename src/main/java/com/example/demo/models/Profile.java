@@ -34,6 +34,8 @@ public class Profile implements Serializable {
 
 	private String contactAddress;
 
+	private int yearsOfWork = 0;
+
 	@OneToOne(mappedBy = "profile")
 	private User user;
 

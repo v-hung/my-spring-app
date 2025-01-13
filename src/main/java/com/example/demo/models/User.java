@@ -15,6 +15,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -74,6 +75,10 @@ public class User implements UserDetails {
 	@ManyToOne
 	@JsonBackReference
 	private Team team;
+
+	@OneToMany(mappedBy = "manager", cascade = CascadeType.ALL)
+	@JsonManagedReference
+	private List<Team> managerTeams = new ArrayList<>();
 
 	@OneToOne(cascade = CascadeType.ALL)
 	@JoinColumn(name = "profile_id", referencedColumnName = "id")

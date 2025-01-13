@@ -1,5 +1,6 @@
 package com.example.demo.models;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -7,14 +8,14 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
-import jakarta.persistence.PrePersist;
-import jakarta.persistence.PreUpdate;
+import jakarta.persistence.OneToOne;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
@@ -24,7 +25,7 @@ import lombok.experimental.Accessors;
 @Getter
 @Setter
 @Accessors(chain = true)
-public class Team extends Timestamp {
+public class Project extends Timestamp {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -35,39 +36,22 @@ public class Team extends Timestamp {
 
 	private String description;
 
-	private int totalMembers = 0;
+	private LocalDateTime startDate;
 
-	private int completedProjects = 0;
+	private LocalDateTime endDate;
 
-	private int activeProjects = 0;
+	@Enumerated(EnumType.STRING)
+	private ProjectStatus status;
 
 	@ManyToOne
 	@JsonBackReference
-	@JoinColumn(name = "manager_id")
-	private User manager;
+	private Team team;
 
-	@OneToMany(mappedBy = "team")
-	@JsonManagedReference
-	private List<User> members = new ArrayList<>();
+	@ManyToOne
+	private User manager;
 
 	@OneToMany
 	@JsonManagedReference
-	private List<Project> projects = new ArrayList<>();
-
-	@PrePersist
-	@PreUpdate
-	public void updateTotalMembers() {
-
-		if (members != null) {
-
-			this.totalMembers = members.size();
-
-		} else {
-
-			this.totalMembers = 0;
-
-		}
-
-	}
+	private List<User> members = new ArrayList<>();
 
 }

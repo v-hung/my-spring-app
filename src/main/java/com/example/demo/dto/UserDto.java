@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.example.demo.models.UserPosition;
 import com.example.demo.models.UserStatus;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import jakarta.persistence.EnumType;
@@ -32,6 +33,7 @@ public class UserDto {
 	@JsonIgnoreProperties({ "supervisor", "roles", "refreshTokens", "workTime", "team" })
 	private UserDto supervisor;
 
+	@JsonBackReference
 	private TeamDto team;
 
 	@NotNull

@@ -1,5 +1,10 @@
 package com.example.demo.dto;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
@@ -15,5 +20,15 @@ public class TeamDto {
 	private String name;
 
 	private String description;
+
+	private int completedProjects = 0;
+
+	private int activeProjects = 0;
+
+	private UserDto manager;
+
+	@NotNull
+	@JsonManagedReference
+	private List<UserDto> members = new ArrayList<>();
 
 }
