@@ -1,6 +1,9 @@
 package com.example.demo.utils;
 
+import java.beans.Expression;
 import java.lang.reflect.Method;
+import java.util.Arrays;
+import java.util.Objects;
 
 import org.springframework.http.HttpStatus;
 
@@ -14,7 +17,7 @@ public class ObjectUtils {
 
 	}
 
-	public static <T> boolean hasNonNullProperties(T object) {
+	public static <U> boolean hasNonNullProperties(U object) {
 
 		if (object == null) {
 
@@ -65,7 +68,7 @@ public class ObjectUtils {
 
 	}
 
-	public static <T> void copyNonNullProperties(T source, T target) {
+	public static <U> void copyNonNullProperties(U source, U target) {
 
 		if (source == null || target == null) {
 

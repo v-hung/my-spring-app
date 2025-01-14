@@ -36,16 +36,15 @@ public class TeamService {
 		QTeam team = QTeam.team;
 		QUser user = QUser.user;
 
-		JPQLQuery<User> membersSubquery = JPAExpressions
-			.select(user)
-			.from(user)
-			.where(user.team.id.eq(team.id))
-			.limit(3);
+		// JPQLQuery<User> membersSubquery = JPAExpressions
+		// 	.select(user)
+		// 	.from(user)
+		// 	.where(user.team.id.eq(team.id))
+		// 	.limit(3);
 
 		// Query chính
 		List<Team> teams = factory.selectFrom(team)
-			.leftJoin(team.members)
-			.where(user.in(membersSubquery))
+			.leftJoin(team.members, user).fetchJoin()
 			.fetch();
 
 		return teams.stream().map(t -> modelMapper.map(t, dtoClass)).toList();

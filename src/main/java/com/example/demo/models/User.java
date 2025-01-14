@@ -58,11 +58,10 @@ public class User implements UserDetails {
 	private UserPosition position;
 
 	@ManyToOne
-	@JsonIgnoreProperties({ "supervisor", "roles", "refreshTokens", "workTime", "team" })
+	@JsonIgnoreProperties({ "supervisor", "roles", "refreshTokens", "workTime", "team", "managerTeams", "profile" })
 	private User supervisor;
 
 	@ManyToMany
-	@Column(nullable = false)
 	private Set<Role> roles = new HashSet<>();
 
 	@OneToMany
@@ -76,12 +75,12 @@ public class User implements UserDetails {
 	@JsonBackReference
 	private Team team;
 
-	@OneToMany(mappedBy = "manager", cascade = CascadeType.ALL)
+	@OneToMany(mappedBy = "manager")
 	@JsonManagedReference
 	private List<Team> managerTeams = new ArrayList<>();
 
-	@OneToOne(cascade = CascadeType.ALL)
-	@JoinColumn(name = "profile_id", referencedColumnName = "id")
+	@OneToOne
+	@JoinColumn(name = "profile_id")
 	@JsonBackReference
 	private Profile profile;
 

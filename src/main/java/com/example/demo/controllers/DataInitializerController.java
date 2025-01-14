@@ -158,7 +158,7 @@ public class DataInitializerController {
 			.collect(Collectors.toMap(
 				Team::getName,
 				team -> teamRepository
-					.findByName(team.getName())
+					.findByName(team.getName(), Team.class)
 					.orElseGet(() -> teamRepository.save(team))));
 
 	}
