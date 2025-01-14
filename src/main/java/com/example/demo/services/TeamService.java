@@ -11,11 +11,8 @@ import com.example.demo.exception.BusinessException;
 import com.example.demo.models.QTeam;
 import com.example.demo.models.QUser;
 import com.example.demo.models.Team;
-import com.example.demo.models.User;
 import com.example.demo.repositories.TeamRepository;
 import com.example.demo.requests.TeamCreateUpdateRequest;
-import com.querydsl.jpa.JPAExpressions;
-import com.querydsl.jpa.JPQLQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
 import lombok.AllArgsConstructor;
@@ -37,14 +34,13 @@ public class TeamService {
 		QUser user = QUser.user;
 
 		// JPQLQuery<User> membersSubquery = JPAExpressions
-		// 	.select(user)
-		// 	.from(user)
+		// 	.selectFrom(user)
 		// 	.where(user.team.id.eq(team.id))
 		// 	.limit(3);
 
-		// Query chính
 		List<Team> teams = factory.selectFrom(team)
-			.leftJoin(team.members, user).fetchJoin()
+			.leftJoin(team.members, user)
+			// .where(user.in(membersSubquery))
 			.fetch();
 
 		return teams.stream().map(t -> modelMapper.map(t, dtoClass)).toList();

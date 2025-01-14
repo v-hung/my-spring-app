@@ -17,11 +17,11 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -57,29 +57,29 @@ public class User implements UserDetails {
 	@Enumerated(EnumType.STRING)
 	private UserPosition position;
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JsonIgnoreProperties({ "supervisor", "roles", "refreshTokens", "workTime", "team", "managerTeams", "profile" })
 	private User supervisor;
 
 	@ManyToMany
 	private Set<Role> roles = new HashSet<>();
 
-	@OneToMany
+	@OneToMany(fetch = FetchType.LAZY)
 	@JsonIgnore
 	private List<RefreshToken> refreshTokens = new ArrayList<>();
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	private WorkTime workTime;
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JsonBackReference
 	private Team team;
 
-	@OneToMany(mappedBy = "manager")
+	@OneToMany(mappedBy = "manager", fetch = FetchType.LAZY)
 	@JsonManagedReference
 	private List<Team> managerTeams = new ArrayList<>();
 
-	@OneToOne
+	@OneToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "profile_id")
 	@JsonBackReference
 	private Profile profile;

@@ -21,8 +21,13 @@ public class TeamDto {
 
 	private String description;
 
+	@NotNull
+	private int totalMembers = 0;
+
+	@NotNull
 	private int completedProjects = 0;
 
+	@NotNull
 	private int activeProjects = 0;
 
 	private UserDto manager;

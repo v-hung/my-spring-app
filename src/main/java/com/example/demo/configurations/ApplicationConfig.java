@@ -1,6 +1,5 @@
 package com.example.demo.configurations;
 
-import org.hibernate.collection.spi.PersistentCollection;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.config.Configuration.AccessLevel;
 import org.modelmapper.convention.NameTokenizers;
@@ -42,18 +41,18 @@ public class ApplicationConfig {
 
 		modelMapper.getConfiguration()
 			.setSkipNullEnabled(true)
-			.setPropertyCondition(context -> {
+			// .setPropertyCondition(context -> {
 
-				// Skip lazy loading properties
-				if (context.getSource() instanceof PersistentCollection<?> persistentCollection) {
+			// 	// Skip lazy loading properties
+			// 	if (context.getSource() instanceof PersistentCollection<?> persistentCollection) {
 
-					return !persistentCollection.wasInitialized();
+			// 		return !persistentCollection.wasInitialized();
 
-				}
+			// 	}
 
-				return true;
+			// 	return true;
 
-			})
+			// })
 			.setFieldMatchingEnabled(true)
 			.setFieldAccessLevel(AccessLevel.PRIVATE)
 			.setSourceNameTokenizer(NameTokenizers.UNDERSCORE)
